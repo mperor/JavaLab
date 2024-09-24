@@ -1,6 +1,7 @@
 # JavaLab
 
 [![Java CI with Gradle](https://github.com/mperor/JavaLab/actions/workflows/gradle.yml/badge.svg)](https://github.com/mperor/JavaLab/actions/workflows/gradle.yml)
+[![Test Results](https://gist.githubusercontent.com/mperor/710a27220e46b738c4a2ccb888676388/raw/badge.svg)](src/test/java/pl/mperor/lab/java)
 
 ## Description
 **JavaLab** serves as an experimental playground and knowledge base for the Java programming language. 
