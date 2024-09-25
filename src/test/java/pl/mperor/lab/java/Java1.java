@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pl.mperor.lab.java.Java1.OuterClass.InnerClass;
 
+import java.io.*;
+
 import static pl.mperor.lab.java.Java1.OuterClass.StaticNestedClass;
 
 /**
@@ -47,6 +49,34 @@ public class Java1 {
         }
 
         public static class StaticNestedClass {
+        }
+    }
+
+    @Test
+    public void testJavaBean() throws IOException, ClassNotFoundException {
+        var bean = new JavaBean();
+        bean.setStringField("Hello");
+        bean.setPrimitiveIntField(-1);
+
+        Assertions.assertEquals("Hello", bean.getStringField());
+        Assertions.assertEquals(-1, bean.getPrimitiveIntField());
+        Assertions.assertInstanceOf(Serializable.class, bean);
+
+        assertReadWriteJavaBean(bean);
+    }
+
+    private void assertReadWriteJavaBean(JavaBean bean) throws IOException, ClassNotFoundException {
+        var file = new File("src/test/resources/bean");
+        try (FileOutputStream fileOut = new FileOutputStream(file);
+             ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+            out.writeObject(bean);
+        }
+
+        try (FileInputStream fileIn = new FileInputStream(file);
+             ObjectInputStream in = new ObjectInputStream(fileIn)) {
+            var beanFromFile = (JavaBean) in.readObject();
+            Assertions.assertEquals(bean.getStringField(), beanFromFile.getStringField());
+            Assertions.assertEquals(bean.getPrimitiveIntField(), beanFromFile.getPrimitiveIntField());
         }
     }
 
