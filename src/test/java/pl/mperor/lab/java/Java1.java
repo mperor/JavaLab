@@ -80,11 +80,11 @@ public class Java1 {
 
     private void assertJavaBeanSerializationAndDeserialization(JavaBean bean) throws IOException, ClassNotFoundException {
         var file = new File("src/test/resources/bean");
-        try (FileOutputStream fileOut = new FileOutputStream(file); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
             out.writeObject(bean);
         }
 
-        try (FileInputStream fileIn = new FileInputStream(file); ObjectInputStream in = new ObjectInputStream(fileIn)) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
             var beanFromFile = (JavaBean) in.readObject();
             Assertions.assertEquals(bean.getStringField(), beanFromFile.getStringField());
             Assertions.assertEquals(bean.getPrimitiveIntField(), beanFromFile.getPrimitiveIntField());
@@ -172,6 +172,22 @@ public class Java1 {
             Assertions.assertEquals(1, resultSet.getInt("id"));
             Assertions.assertEquals("Mark Pi", resultSet.getString("name"));
         }
+    }
+
+    @Test
+    public void testUnicodeSupport() {
+        // UTF-16 (ang. 16-bit Unicode Transformation Format)
+        char englishLetter = '\u0041';      // Latin Alphabet
+        char polishLetter = '\u0104';       // Polish capital letter A with a hook - diacritic (Ą)
+        char greekLetter = '\u0391';        // Greek capital letter Alpha (Α)
+        char chineseCharacter = '\u4E2D';   // Chinese character for "middle" (中)
+        String emoji = "\uD83D\uDE00";      // Smiling face emoji (😀)
+
+        Assertions.assertEquals('A', englishLetter);
+        Assertions.assertEquals('Α', greekLetter);
+        Assertions.assertEquals('Ą', polishLetter);
+        Assertions.assertEquals('中', chineseCharacter);
+        Assertions.assertEquals("😀", emoji);
     }
 
 }
