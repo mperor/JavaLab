@@ -8,6 +8,15 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static pl.mperor.lab.java.Java1.OuterClass.StaticNestedClass;
 
@@ -97,5 +106,51 @@ public class Java1 {
 
         Assertions.assertEquals("set by reflection", getter.invoke(bean));
     }
+
+    @Test
+    public void testRemoteMethodInvocationAkaRMI() throws RemoteException, NotBoundException, InterruptedException {
+        CountDownLatch serverReadyLatch = new CountDownLatch(1);
+
+        // Run the RMI server asynchronously
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            try {
+                HelloService helloService = new HelloServiceImpl();
+                Registry registry = LocateRegistry.createRegistry(1099);
+                registry.rebind("HelloService", helloService);
+                serverReadyLatch.countDown();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        // Give the server time to start
+        serverReadyLatch.await();
+
+        // Connect to the RMI registry and lookup the HelloService
+        Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+        HelloService stub = (HelloService) registry.lookup("HelloService");
+
+        // Call the remote method and verify the result
+        Assertions.assertEquals("Hello World!", stub.sayHello());
+
+        executor.shutdown();
+    }
+
+    interface HelloService extends Remote {
+        String sayHello() throws RemoteException;
+    }
+
+    static class HelloServiceImpl extends UnicastRemoteObject implements HelloService {
+
+        protected HelloServiceImpl() throws RemoteException {
+        }
+
+        @Override
+        public String sayHello() throws RemoteException {
+            return "Hello World!";
+        }
+    }
+
 
 }
