@@ -74,10 +74,10 @@ public class Java1 {
         Assertions.assertEquals(-1, bean.getPrimitiveIntField());
         Assertions.assertInstanceOf(Serializable.class, bean);
 
-        assertReadWriteJavaBean(bean);
+        assertJavaBeanSerializationAndDeserialization(bean);
     }
 
-    private void assertReadWriteJavaBean(JavaBean bean) throws IOException, ClassNotFoundException {
+    private void assertJavaBeanSerializationAndDeserialization(JavaBean bean) throws IOException, ClassNotFoundException {
         var file = new File("src/test/resources/bean");
         try (FileOutputStream fileOut = new FileOutputStream(file);
              ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
