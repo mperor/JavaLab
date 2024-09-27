@@ -14,6 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,13 +80,11 @@ public class Java1 {
 
     private void assertJavaBeanSerializationAndDeserialization(JavaBean bean) throws IOException, ClassNotFoundException {
         var file = new File("src/test/resources/bean");
-        try (FileOutputStream fileOut = new FileOutputStream(file);
-             ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+        try (FileOutputStream fileOut = new FileOutputStream(file); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
             out.writeObject(bean);
         }
 
-        try (FileInputStream fileIn = new FileInputStream(file);
-             ObjectInputStream in = new ObjectInputStream(fileIn)) {
+        try (FileInputStream fileIn = new FileInputStream(file); ObjectInputStream in = new ObjectInputStream(fileIn)) {
             var beanFromFile = (JavaBean) in.readObject();
             Assertions.assertEquals(bean.getStringField(), beanFromFile.getStringField());
             Assertions.assertEquals(bean.getPrimitiveIntField(), beanFromFile.getPrimitiveIntField());
@@ -152,5 +151,27 @@ public class Java1 {
         }
     }
 
+    @Test
+    public void testJavaDatabaseConnectivityAkaJDBC() throws SQLException, ClassNotFoundException {
+        String createTableUsersSqlCommand = "CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name TEXT)";
+        String insertUserSqlCommand = "INSERT INTO users (name) VALUES ('Mark Pi')";
+        String queryAllUsersSqlCommand = "SELECT * FROM users";
+
+        // Load the H2 JDBC driver
+        Class.forName("org.h2.Driver");
+
+        // Establish a connection to an in-memory H2 database & create a statement object for executing SQL queries
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:test", "sa", "");
+             Statement statement = connection.createStatement()) {
+
+            statement.executeUpdate(createTableUsersSqlCommand);
+            statement.executeUpdate(insertUserSqlCommand);
+            ResultSet resultSet = statement.executeQuery(queryAllUsersSqlCommand);
+
+            Assertions.assertTrue(resultSet.next());
+            Assertions.assertEquals(1, resultSet.getInt("id"));
+            Assertions.assertEquals("Mark Pi", resultSet.getString("name"));
+        }
+    }
 
 }
