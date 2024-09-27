@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import pl.mperor.lab.java.Java1.OuterClass.InnerClass;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static pl.mperor.lab.java.Java1.OuterClass.StaticNestedClass;
 
@@ -78,6 +81,21 @@ public class Java1 {
             Assertions.assertEquals(bean.getStringField(), beanFromFile.getStringField());
             Assertions.assertEquals(bean.getPrimitiveIntField(), beanFromFile.getPrimitiveIntField());
         }
+    }
+
+    @Test
+    public void testReflectionAPI() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Class<JavaBean> clazz = JavaBean.class;
+        Constructor<JavaBean> constructor = clazz.getDeclaredConstructor(String.class, int.class);
+        JavaBean bean = constructor.newInstance("init by reflection", -1);
+
+        Method getter = clazz.getDeclaredMethod("getStringField");
+        Assertions.assertEquals("init by reflection", getter.invoke(bean));
+
+        Method setter = clazz.getDeclaredMethod("setStringField", String.class);
+        setter.invoke(bean, "set by reflection");
+
+        Assertions.assertEquals("set by reflection", getter.invoke(bean));
     }
 
 }
