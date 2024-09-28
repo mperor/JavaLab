@@ -3,6 +3,9 @@ package pl.mperor.lab.java;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.*;
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +23,17 @@ public class Java2 {
         Assertions.assertEquals(1, list.getFirst());
         Assertions.assertTrue(set.contains(1));
         Assertions.assertEquals("Two", map.get(2));
+    }
+
+    @Test
+    public void testSwingGUI() throws InterruptedException, InvocationTargetException {
+        if (!GraphicsEnvironment.isHeadless())
+            SwingUtilities.invokeAndWait(() -> {
+                SwingForm form = new SwingForm();
+                form.input.setText("Hi");
+                form.button.doClick();
+                Assertions.assertEquals("Your text: Hi!", form.label.getText());
+            });
     }
 
 }
