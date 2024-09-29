@@ -8,4 +8,5 @@ public class Main {
         System.out.println("Hello World!");
         SwingUtilities.invokeLater(SwingForm::new);
     }
+
 }
