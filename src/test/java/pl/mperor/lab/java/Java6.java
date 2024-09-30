@@ -8,6 +8,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,11 +26,11 @@ public class Java6 {
         ScriptEngine engine = manager.getEngineByName("JavaScript");
 
         // Execute a simple JavaScript expression
-        assertEquals(2, engine.eval("const a = 1, b = 1; a + b;"));
+        Assertions.assertEquals(2, engine.eval("const a = 1, b = 1; a + b;"));
 
         // Call a JavaScript function from Java
         engine.eval("function add(a, b) { return a + b; }");
-        assertEquals(2, engine.eval("add(1,1)"));
+        Assertions.assertEquals(2, engine.eval("add(1,1)"));
     }
 
     @Test
@@ -50,6 +51,21 @@ public class Java6 {
         int compilationResult = compiler.run(null, null, null, sourceFile.getAbsolutePath());
         Assertions.assertEquals(0, compilationResult, "Compilation should succeed with result 0!");
         Assertions.assertTrue(sourceFile.delete(), "Source file should be deleted after compilation");
+    }
+
+    @Test
+    void testSystemTrayIcon() throws AWTException {
+        if (SystemTray.isSupported()) {
+            SystemTray tray = SystemTray.getSystemTray();
+            Image trayIconImage = Toolkit.getDefaultToolkit().createImage("icon.png");
+            TrayIcon trayIcon = new TrayIcon(trayIconImage, "Test Tray Icon");
+
+            tray.add(trayIcon);
+            Assertions.assertTrue(tray.getTrayIcons().length > 0, "Tray icon should be added");
+
+            tray.remove(trayIcon);
+            Assertions.assertEquals(0, tray.getTrayIcons().length, "Tray icon should be removed");
+        }
     }
 
 }
