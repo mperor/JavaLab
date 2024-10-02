@@ -1,11 +1,11 @@
-package pl.mperor.lab.java;
+package pl.mperor.lab.java.lang;
 
 import java.io.Serializable;
 
 /**
  * Designed for frameworks (JSP, JSF, etc.)
  */
-class JavaBean implements Serializable {  // Serializable:
+public class JavaBean implements Serializable {  // Serializable:
 
     // Optional but Recommended
     // This prevents deserialization issues when class structure changes.
@@ -16,28 +16,28 @@ class JavaBean implements Serializable {  // Serializable:
     private int primitiveIntField;
 
     // No-argument constructor:
-    JavaBean() {
+    public JavaBean() {
     }
 
-    JavaBean(String stringField, int primitiveIntField) {
+    public JavaBean(String stringField, int primitiveIntField) {
         this.stringField = stringField;
         this.primitiveIntField = primitiveIntField;
     }
 
     // Getter and Setter methods:
-    String getStringField() {
+    public String getStringField() {
         return stringField;
     }
 
-    void setStringField(String stringField) {
+    public void setStringField(String stringField) {
         this.stringField = stringField;
     }
 
-    int getPrimitiveIntField() {
+    public int getPrimitiveIntField() {
         return primitiveIntField;
     }
 
-    void setPrimitiveIntField(int primitiveIntField) {
+    public void setPrimitiveIntField(int primitiveIntField) {
         this.primitiveIntField = primitiveIntField;
     }
 }

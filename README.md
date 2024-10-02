@@ -7,3 +7,17 @@
 **JavaLab** serves as an experimental playground and knowledge base for the Java programming language. 
 The goal of this project is to maintain a set of tests that explore various nuances and intricacies of Java code. 
 Each test aims to provide clear examples and answers to common (and not-so-common) challenges developers face when working with Java.
+
+### Key functionality tests in Java versions
+
+This project includes unit tests for key functionalities introduced in each Java version.
+
+- [Java 1.1 (Java 1)](src/test/java/pl/mperor/lab/java/Java1.java)
+- [Java 1.2 (Java 2)](src/test/java/pl/mperor/lab/java/Java2.java)
+- [Java 1.3 (Java 3)](src/test/java/pl/mperor/lab/java/Java3.java)
+- [Java 1.4 (Java 4)](src/test/java/pl/mperor/lab/java/Java4.java)
+- [Java 1.5 (Java 5)](src/test/java/pl/mperor/lab/java/Java5.java)
+- [Java 1.6 (Java 6)](src/test/java/pl/mperor/lab/java/Java6.java)
+- [Java 1.7 (Java 7)](src/test/java/pl/mperor/lab/java/Java7.java)
+
+For detailed examples and tests of each feature, please refer to the individual source files linked above.
