@@ -2,6 +2,7 @@ package pl.mperor.lab.java;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import pl.mperor.lab.java.generic.Box;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -35,19 +36,6 @@ public class Java5 {
         });
         Integer rawBoxContent = (Integer) rawBox.getContent();
         Assertions.assertEquals(1, rawBoxContent);
-    }
-
-    class Box<T> {
-        private T content;
-
-        public Box<T> setContent(T content) {
-            this.content = content;
-            return this;
-        }
-
-        public T getContent() {
-            return content;
-        }
     }
 
     @Test
