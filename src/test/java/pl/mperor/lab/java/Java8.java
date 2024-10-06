@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.*;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Java 1.8 (March 2014)
  */
@@ -41,16 +43,16 @@ public class Java8 {
     @Test
     public void testCoreFunctionalInterfaces() {
         Predicate<?> nullValidator = Objects::isNull;
-        Assertions.assertTrue(nullValidator.test(null));
+        assertTrue(nullValidator.test(null));
 
         var out = TestUtils.setTempSystemOut();
-        Consumer<String> printer = System.out::print;
-        printer.accept("printed");
+        Consumer<String> systemPrinter = System.out::print;
+        systemPrinter.accept("printed");
         Assertions.assertEquals("printed", out.all());
         TestUtils.resetSystemOut();
 
         Supplier<Double> randomGenerator = Math::random;
-        Assertions.assertTrue(randomGenerator.get() < 1.0);
+        assertTrue(randomGenerator.get() < 1.0);
 
         UnaryOperator<Integer> absoluteUpdater = Math::abs;
         Assertions.assertEquals(1, absoluteUpdater.apply(-1));
@@ -66,18 +68,60 @@ public class Java8 {
         testable.test();
         // same as Runnable runnable = () -> {};
 
-        Assertions.assertTrue(Testable.class.isAnnotationPresent(FunctionalInterface.class));
+        assertFunctionalInterface(Testable.class);
+    }
 
-        long abstractMethodCount = Arrays.stream(Testable.class.getMethods())
+    private static void assertFunctionalInterface(Class<?> clazz) {
+        if (!clazz.isInterface()) {
+            Assertions.fail("Clazz is not an interface!");
+        }
+
+        long abstractMethodCount = Arrays.stream(clazz.getMethods())
                 .map(Method::getModifiers)
                 .filter(Modifier::isAbstract)
                 .count();
-        Assertions.assertEquals(1, abstractMethodCount);
+
+        Assertions.assertTrue(clazz.isAnnotationPresent(FunctionalInterface.class) || 1 == abstractMethodCount,
+                "Functional interface should contain exactly one abstract method, but @FunctionalInterface is optional!");
     }
 
     @FunctionalInterface
     public interface Testable {
         void test();
+    }
+
+    @Test
+    public void testDefaultAndStaticMethodsInInterface() throws NoSuchMethodException {
+        Tester tester = () -> new Testable[]{
+                () -> System.out.println("First test"),
+                () -> System.out.println("Second test"),
+        };
+        var out = TestUtils.setTempSystemOut();
+        tester.run();
+        Assertions.assertEquals("First test", out.lines().getFirst());
+        Assertions.assertEquals("Second test", out.lines().getSecond());
+        TestUtils.resetSystemOut();
+
+        Method defaultMethod = Tester.class.getMethod("run");
+        Assertions.assertTrue(defaultMethod.isDefault());
+
+        Method staticMethod = Tester.class.getMethod("checkAll", Testable[].class);
+        Assertions.assertTrue(Modifier.isStatic(staticMethod.getModifiers()));
+
+        assertFunctionalInterface(Tester.class);
+    }
+
+    public interface Tester {
+
+        Testable[] getTests();
+
+        default void run() {
+            checkAll(getTests());
+        }
+
+        static void checkAll(Testable... testable) {
+            Arrays.stream(testable).forEach(Testable::test);
+        }
     }
 
 }
