@@ -8,7 +8,9 @@ import pl.mperor.lab.TestUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -122,6 +124,18 @@ public class Java8 {
         static void checkAll(Testable... testable) {
             Arrays.stream(testable).forEach(Testable::test);
         }
+    }
+
+    @Test
+    public void testOptional() {
+        Optional<String> empty = Optional.empty();
+        Assertions.assertTrue(empty.isEmpty());
+        Assertions.assertThrows(NoSuchElementException.class, () -> empty.get());
+
+        Optional<String> filled = Optional.of("Java 8");
+        Assertions.assertTrue(filled.isPresent());
+        Assertions.assertEquals("Java 8", filled.get());
+        filled.ifPresent(content -> Assertions.assertEquals("Java 8", content));
     }
 
 }
