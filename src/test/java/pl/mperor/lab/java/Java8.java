@@ -54,7 +54,8 @@ public class Java8 {
         TestUtils.resetSystemOut();
 
         Supplier<Double> randomGenerator = Math::random;
-        assertTrue(randomGenerator.get() < 1.0);
+        Double random = randomGenerator.get();
+        Assertions.assertTrue(random >= 0.0 && random < 1.0);
 
         UnaryOperator<Integer> absoluteUpdater = Math::abs;
         Assertions.assertEquals(1, absoluteUpdater.apply(-1));
@@ -137,5 +138,31 @@ public class Java8 {
         Assertions.assertEquals("Java 8", filled.get());
         filled.ifPresent(content -> Assertions.assertEquals("Java 8", content));
     }
+
+    @Test
+    public void testMethodReferences() {
+        Runnable staticMethod = Reference::staticMethod;
+        staticMethod.run();
+
+        Reference instance = new Reference();
+        Runnable particularObjectInstanceMethod = instance::instanceMethod;
+        particularObjectInstanceMethod.run();
+
+        Supplier<Reference> constructorMethod = Reference::new;
+        Assertions.assertNotNull(constructorMethod.get());
+
+        Consumer<Reference> arbitraryObjectInstanceMethod = Reference::instanceMethod;
+        arbitraryObjectInstanceMethod.accept(new Reference());
+    }
+
+    public class Reference {
+
+        public void instanceMethod() {
+        }
+
+        public static void staticMethod() {
+        }
+    }
+
 
 }
