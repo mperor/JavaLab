@@ -7,13 +7,12 @@ import pl.mperor.lab.TestUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.time.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Java 1.8 (March 2014)
@@ -45,7 +44,7 @@ public class Java8 {
     @Test
     public void testCoreFunctionalInterfaces() {
         Predicate<?> nullValidator = Objects::isNull;
-        assertTrue(nullValidator.test(null));
+        Assertions.assertTrue(nullValidator.test(null));
 
         var out = TestUtils.setTempSystemOut();
         Consumer<String> systemPrinter = System.out::print;
@@ -189,5 +188,28 @@ public class Java8 {
         Assertions.assertEquals(OptionalInt.of(3), IntStream.rangeClosed(1, 3).max());
     }
 
+    @Test
+    public void testNewDateAndTimeAPI() {
+        // same as DateTimeFormatter.ISO_LOCAL_DATE.parse(...)
+        LocalDate releaseJava8Date = LocalDate.parse("2014-03-18");
+        Assertions.assertEquals(LocalDate.of(2014, Month.MARCH, 18), releaseJava8Date);
+
+        LocalTime noonTime = LocalTime.of(12, 0, 0);
+        Assertions.assertEquals(LocalTime.NOON, noonTime);
+
+        // same as DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(...)
+        LocalDateTime twoThousand = LocalDateTime.parse("2000-01-01T00:00:00");
+        Assertions.assertEquals(LocalDateTime.of(2000, 1, 1, 0, 0, 0), twoThousand);
+
+        Period betweenJava1And8 = Period.between(LocalDate.of(1996, Month.JANUARY, 23), LocalDate.of(2014, Month.MARCH, 8));
+        Assertions.assertEquals(18, betweenJava1And8.getYears());
+
+        Duration betweenMidnightAndNoon = Duration.between(LocalTime.MIDNIGHT, LocalTime.NOON);
+        Assertions.assertEquals(12, betweenMidnightAndNoon.toHours());
+
+        Instant initialInstant = Instant.ofEpochSecond(0);
+        Assertions.assertEquals("1970-01-01T00:00:00Z", initialInstant.toString());
+        Assertions.assertEquals(60, initialInstant.plusSeconds(60).getEpochSecond());
+    }
 
 }
