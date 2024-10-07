@@ -7,11 +7,11 @@ import pl.mperor.lab.TestUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -162,6 +162,31 @@ public class Java8 {
 
         public static void staticMethod() {
         }
+    }
+
+    @Test
+    public void testStreamsAPI() {
+        // Stream Creation
+        Assertions.assertInstanceOf(Stream.class, List.of(1, 2, 3).stream());
+        Assertions.assertInstanceOf(IntStream.class, Arrays.stream(new int[]{1, 2, 3}));
+        Assertions.assertInstanceOf(Stream.class, Stream.of(1, 2, 3));
+
+        // Intermediate Operations
+        Stream<String> intermediateOperationPipeline = List.of("c", "b", "a", "").stream()
+                .filter(s -> s.matches("^\\w$"))
+                .map(String::toUpperCase)
+                .sorted();
+        Assertions.assertInstanceOf(Stream.class, intermediateOperationPipeline);
+        Assertions.assertEquals("ABC", intermediateOperationPipeline.collect(Collectors.joining()));
+        IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, intermediateOperationPipeline::count);
+        Assertions.assertEquals("stream has already been operated upon or closed", exception.getMessage());
+
+        // Terminal Operations
+        Assertions.assertEquals(3, IntStream.rangeClosed(1, 3).count());
+        Assertions.assertEquals(6, IntStream.rangeClosed(1, 3).sum());
+        Assertions.assertEquals(6, IntStream.rangeClosed(1, 3).reduce(1, (a, b) -> a * b));
+        Assertions.assertEquals(List.of(1, 2, 3), IntStream.rangeClosed(1, 3).boxed().collect(Collectors.toList()));
+        Assertions.assertEquals(OptionalInt.of(3), IntStream.rangeClosed(1, 3).max());
     }
 
 
