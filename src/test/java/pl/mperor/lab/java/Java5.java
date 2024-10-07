@@ -2,10 +2,9 @@ package pl.mperor.lab.java;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import pl.mperor.lab.TestUtils;
 import pl.mperor.lab.java.generic.Box;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.lang.annotation.*;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -102,10 +101,7 @@ public class Java5 {
     @Test
     public void testConcurrencyAPI() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        var original = System.out;
-        var out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
-
+        var out = TestUtils.setTempSystemOut();
         IntStream.rangeClosed(1, 3).forEach(i ->
                 executor.submit(() -> {
                     // Code executed in a separate thread
@@ -113,8 +109,8 @@ public class Java5 {
                 })
         );
         executor.close();
-        Assertions.assertEquals("Task 1 Task 2 Task 3 ", out.toString());
-        System.setOut(original);
+        Assertions.assertEquals("Task 1 Task 2 Task 3 ", out.all());
+        TestUtils.resetSystemOut();
     }
 
     @Test
