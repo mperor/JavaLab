@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -73,4 +72,21 @@ public class Java9 {
         Assertions.assertTrue(process.pid() != -1);
         process.destroy();
     }
+
+    @Test
+    public void testPrivateInterfaceMethod() {
+        InterfaceJava9 myInterface = new InterfaceJava9() {};
+        Assertions.assertEquals("Private logic in public method", myInterface.publicMethod());
+    }
+
+    public interface InterfaceJava9 {
+        default String publicMethod() {
+            return privateMethod() + " in public method";
+        }
+
+        private String privateMethod() {
+            return "Private logic";
+        }
+    }
+
 }
