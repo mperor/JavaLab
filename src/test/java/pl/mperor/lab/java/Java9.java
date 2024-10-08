@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -58,5 +59,18 @@ public class Java9 {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(201, response.statusCode());
         Assertions.assertNotNull(response.body());
+    }
+
+    @Test
+    public void testProcessAPI() throws IOException {
+        ProcessHandle self = ProcessHandle.current();
+        ProcessHandle.Info info = self.info();
+        Assertions.assertNotNull(info);
+        Assertions.assertTrue(info.command().isPresent());
+
+        Process process = new ProcessBuilder("java", "-version").start();
+        Assertions.assertTrue(process.isAlive());
+        Assertions.assertTrue(process.pid() != -1);
+        process.destroy();
     }
 }
