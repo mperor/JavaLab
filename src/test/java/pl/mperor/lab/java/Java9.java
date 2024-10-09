@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -70,6 +71,27 @@ public class Java9 {
         Process process = new ProcessBuilder("java", "-version").start();
         Assertions.assertTrue(process.isAlive());
         Assertions.assertTrue(process.pid() != -1);
+        process.destroy();
+    }
+
+    @Test
+    public void testJShell() throws IOException, InterruptedException {
+        Process process = new ProcessBuilder("jshell")
+                .start();
+        Assertions.assertTrue(process.isAlive());
+
+        try (var reader = process.inputReader();
+             var writer = new PrintWriter(process.outputWriter())) {
+            writer.println("System.out.println(\"Hello from JShell!\");");
+            writer.println("/exit");
+            writer.flush();
+
+            String lastLineBeforeExit = reader.lines()
+                    .takeWhile(s -> !s.contains("Goodbye"))
+                    .reduce("", (first, second) -> second);
+            Assertions.assertEquals("Hello from JShell!", lastLineBeforeExit);
+        }
+        Assertions.assertEquals(0, process.waitFor());
         process.destroy();
     }
 
