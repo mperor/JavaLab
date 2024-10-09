@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -109,6 +110,30 @@ public class Java9 {
         private String privateMethod() {
             return "Private logic";
         }
+    }
+
+    @Test
+    public void testCollectionFactoryMethods() {
+        Map<String, Integer> byFactoryMethodMap = Map.of("one", 1, "two", 2, "three", 3);
+
+        // Old style combination of `new HashMap<>()` and `put()`
+        Map<String, Integer> classicalMap = new HashMap<>();
+        classicalMap.put("one", 1);
+        classicalMap.put("two", 2);
+        classicalMap.put("three", 3);
+        Assertions.assertEquals(byFactoryMethodMap, classicalMap);
+
+        // Double Brace Initialization
+        Map<String, Integer> doubleBraceInitializedMap = new HashMap<>() {{
+            put("one", 1);
+            put("two", 2);
+            put("three", 3);
+        }};
+        Assertions.assertEquals(byFactoryMethodMap, doubleBraceInitializedMap);
+
+        // Single entry map
+        Map<String, Integer> singleEntryMap = Collections.singletonMap("one", 1);
+        Assertions.assertEquals(byFactoryMethodMap.get("one"), singleEntryMap.get("one"));
     }
 
 }
