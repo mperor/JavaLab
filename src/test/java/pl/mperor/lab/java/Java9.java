@@ -3,6 +3,8 @@ package pl.mperor.lab.java;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -10,7 +12,10 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.*;
+import java.nio.file.Files;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -134,6 +139,20 @@ public class Java9 {
         // Single entry map
         Map<String, Integer> singleEntryMap = Collections.singletonMap("one", 1);
         Assertions.assertEquals(byFactoryMethodMap.get("one"), singleEntryMap.get("one"));
+    }
+
+    @Test
+    public void testTryWithResourcesWithJava9Syntax() throws IOException {
+        File tempFile = File.createTempFile("Java9", "txt");
+        // Declare and initialize the resource before the try block
+        FileWriter writer = new FileWriter(tempFile);
+        try (writer) {
+            writer.write("Java 9 syntax for try-with-resources!");
+        }
+        IOException flushException = Assertions.assertThrows(IOException.class, () -> writer.flush());
+        Assertions.assertEquals("Stream closed", flushException.getMessage());
+        Assertions.assertEquals("Java 9 syntax for try-with-resources!", Files.readString(tempFile.toPath()));
+        Assertions.assertTrue(Files.deleteIfExists(tempFile.toPath()));
     }
 
 }
