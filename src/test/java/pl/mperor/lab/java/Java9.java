@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 public class Java9 {
 
     @Test
-    public void testNewHTTPClientAPI_getMethod() throws URISyntaxException, IOException, InterruptedException, ExecutionException {
+    public void testNewHTTPClientAPI_getMethodSyncVsAsync() throws URISyntaxException, IOException, InterruptedException, ExecutionException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI("https://jsonplaceholder.typicode.com/posts/1"))
@@ -41,7 +41,7 @@ public class Java9 {
     }
 
     @Test
-    public void testNewHTTPClientAPI_postMethod() throws URISyntaxException, IOException, InterruptedException, ExecutionException {
+    public void testNewHTTPClientAPI_postMethod() throws URISyntaxException, IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI("https://jsonplaceholder.typicode.com/posts"))
@@ -76,12 +76,12 @@ public class Java9 {
     @Test
     public void testPrivateInterfaceMethod() {
         InterfaceJava9 myInterface = new InterfaceJava9() {};
-        Assertions.assertEquals("Private logic in public method", myInterface.publicMethod());
+        Assertions.assertEquals("Private logic in public method!", myInterface.publicMethod());
     }
 
     public interface InterfaceJava9 {
         default String publicMethod() {
-            return privateMethod() + " in public method";
+            return privateMethod() + " in public method!";
         }
 
         private String privateMethod() {
