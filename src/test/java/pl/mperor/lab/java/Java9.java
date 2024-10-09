@@ -97,6 +97,7 @@ public class Java9 {
                     .reduce("", (first, second) -> second);
             Assertions.assertEquals("Hello from JShell!", lastLineBeforeExit);
         }
+
         Assertions.assertEquals(0, process.waitFor());
         process.destroy();
     }
