@@ -22,5 +22,6 @@ This project includes unit tests for key functionalities introduced in each Java
 - [Java 1.8 (Java 8)](src/test/java/pl/mperor/lab/java/Java8.java)
 - [Java 9](src/test/java/pl/mperor/lab/java/Java9.java)
 - [Java 10](src/test/java/pl/mperor/lab/java/Java10.java)
+- [Java 11](src/test/java/pl/mperor/lab/java/Java11.java)
 
 For detailed examples and tests of each feature, please refer to the individual source files linked above.
