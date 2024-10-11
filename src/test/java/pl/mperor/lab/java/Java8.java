@@ -65,8 +65,7 @@ public class Java8 {
 
     @Test
     public void testCustomFunctionalInterface() {
-        Testable testable = () -> {
-        };
+        Testable testable = () -> {};
         testable.test();
         // same as Runnable runnable = () -> {};
 
