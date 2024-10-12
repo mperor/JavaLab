@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +26,7 @@ public class Java10 {
     }
 
     @Test
-    public void testCopyOf() {
+    public void testUnmodifiableCollectionCopyOf() {
         var original = List.of("Java", "Python", "JavaScript");
         var copy = List.copyOf(original);
         Assertions.assertEquals(original, copy);
@@ -36,6 +38,20 @@ public class Java10 {
         Optional<String> optional = Optional.empty();
         Assertions.assertThrows(IllegalStateException.class, () -> optional.orElseThrow(IllegalStateException::new));
         Assertions.assertEquals("", optional.stream().collect(Collectors.joining()));
+    }
+
+    @Test
+    public void testCompletableFutureTimeout() {
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return "Result";
+        }).orTimeout(10, TimeUnit.MILLISECONDS);
+
+        Assertions.assertThrows(Exception.class, future::join);
     }
 
 }
