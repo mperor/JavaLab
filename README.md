@@ -20,6 +20,7 @@ This project includes unit tests for key functionalities introduced in each Java
 - [Java 1.6 (Java 6)](src/test/java/pl/mperor/lab/java/Java6.java)
 - [Java 1.7 (Java 7)](src/test/java/pl/mperor/lab/java/Java7.java)
 - [Java 1.8 (Java 8)](src/test/java/pl/mperor/lab/java/Java8.java)
-- [Java 1.9 (Java 9)](src/test/java/pl/mperor/lab/java/Java9.java)
+- [Java 9](src/test/java/pl/mperor/lab/java/Java9.java)
+- [Java 10](src/test/java/pl/mperor/lab/java/Java10.java)
 
 For detailed examples and tests of each feature, please refer to the individual source files linked above.

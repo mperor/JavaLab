@@ -53,5 +53,4 @@ public class Java10 {
 
         Assertions.assertThrows(Exception.class, future::join);
     }
-
 }
