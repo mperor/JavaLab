@@ -35,12 +35,18 @@ public class Java12 {
     }
 
     @Test
-    public void testPatternMatchingInstanceOf() {
+    public void testPatternMatchingInstanceOfAkaSmartCasting() {
         Object o = "Hello String!";
         if (o instanceof String s) {
             Assertions.assertNotNull(s);
             Assertions.assertInstanceOf(String.class, s);
         }
+        Assertions.assertTrue(nonEmptyString("Hello World!"));
+        Assertions.assertFalse(nonEmptyString(null));
+    }
+
+    private static boolean nonEmptyString(Object obj) {
+        return (obj instanceof String str) && !str.isEmpty();
     }
 
     @Test

@@ -3,8 +3,6 @@ package pl.mperor.lab.java;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIf;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import pl.mperor.lab.TestUtils;
 
 import java.io.IOException;
