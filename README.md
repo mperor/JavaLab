@@ -27,5 +27,6 @@ This project includes unit tests for key functionalities introduced in each Java
 - [Java 13](src/test/java/pl/mperor/lab/java/Java13.java)
 - [Java 14](src/test/java/pl/mperor/lab/java/Java14.java)
 - [Java 15](src/test/java/pl/mperor/lab/java/Java15.java)
+- [Java 16](src/test/java/pl/mperor/lab/java/Java16.java)
 
 For detailed examples and tests of each feature, please refer to the individual source files linked above.
