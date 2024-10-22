@@ -9,12 +9,16 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    graaljsVersion = '24.1.1'
+}
+
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'com.h2database:h2:2.2.224'
-    testRuntimeOnly 'org.graalvm.js:js:23.0.4'
-    testImplementation 'org.graalvm.js:js-scriptengine:23.0.4'
+    testRuntimeOnly "org.graalvm.js:js:${graaljsVersion}"
+    testImplementation "org.graalvm.js:js-scriptengine:${graaljsVersion}"
 }
 
 test {
