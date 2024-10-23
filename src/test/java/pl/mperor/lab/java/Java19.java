@@ -1,40 +1,17 @@
 package pl.mperor.lab.java;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import pl.mperor.lab.TestUtils;
-import pl.mperor.lab.TestUtils.ReadableOut;
-
-/**
- * Java 19 (September 2022)
- */
+/// Java 19™ (September 2022)
+/// [JDK 19](https://openjdk.org/projects/jdk/19)
+///
+/// - STANDARD FEATURES:
+///     - 422:	Linux/RISC-V Port
+///
+/// - PREVIEW & INCUBATOR:
+///     - 405:	Record Patterns (Preview)
+///     - 424:	Foreign Function & Memory API (Preview)
+///     - 425:	Virtual Threads (Preview)
+///     - 427:	Pattern Matching for switch (Third Preview)
+///     - 428:	Structured Concurrency (Incubator)
+///     - 426:	Vector API (Fourth Incubator)
 public class Java19 {
-
-    @Test
-    public void testRecordPatternDeconstruct() {
-        record Point(int x, int y) {}
-        record LineSegment(Point start, Point end) {}
-        Object obj = new LineSegment(new Point(0,1), new Point(1, 2));
-
-        if(obj instanceof LineSegment(Point(int x, int y), Point end)) {
-            Assertions.assertEquals(0, x);
-            Assertions.assertEquals(1, y);
-            Assertions.assertEquals(new Point (1,2), end);
-        }
-    }
-
-    @Test
-    public void testVirtualThreads() throws InterruptedException {
-        ReadableOut out = TestUtils.setTempSystemOut();
-        Thread virtualThread = Thread.startVirtualThread(() ->
-                System.out.print("Hello from Virtual Thread!")
-        );
-        virtualThread.join();
-        TestUtils.resetSystemOut();
-
-        Assertions.assertTrue(virtualThread.isDaemon() && virtualThread.isVirtual());
-        Assertions.assertEquals(Thread.NORM_PRIORITY, virtualThread.getPriority());
-        Assertions.assertEquals("Hello from Virtual Thread!", out.all());
-    }
-
 }
