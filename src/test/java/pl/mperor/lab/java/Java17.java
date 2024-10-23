@@ -2,20 +2,81 @@ package pl.mperor.lab.java;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
+import pl.mperor.lab.java.lang.JavaBean;
+import pl.mperor.lab.java.sealed.*;
 
+import java.applet.Applet;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
 import java.util.HexFormat;
-import java.util.ServiceLoader;
-import java.util.random.RandomGenerator;
+import java.util.Set;
 import java.util.random.RandomGeneratorFactory;
 
-/**
- * Java 17 (September 2021)
- */
+/// Java 17™ (September 2021)
+/// [JDK 17](https://openjdk.org/projects/jdk/17)
+///
+/// - STANDARD FEATURES:
+///     - 409:	Sealed Classes
+///     - 403:	Strongly Encapsulate JDK Internals
+///     - 356:	Enhanced Pseudo-Random Number Generators
+///     - 306:	Restore Always-Strict Floating-Point Semantics
+///     - 398:	Deprecate the Applet API for Removal
+///     - 411:	Deprecate the Security Manager for Removal
+///     - 407:	Remove RMI Activation
+///     - 410:	Remove the Experimental AOT and JIT Compiler
+///     - 415:	Context-Specific Deserialization Filters
+///     - 382:	New macOS Rendering Pipeline
+///     - 391:	macOS/AArch64 Port
+///
+/// - PREVIEW & INCUBATOR:
+///     - 406:	Pattern Matching for switch (Preview)
+///     - 412:	Foreign Function & Memory API (Incubator)
+///     - 414:	Vector API (Second Incubator)
 public class Java17 {
+
+    @Test
+    public void testSealedClassesAndInterfaces() {
+        Assertions.assertTrue(Sealed.class.isSealed());
+        Assertions.assertFalse(NonSealed.class.isSealed());
+        Assertions.assertFalse(Final.class.isSealed());
+        Assertions.assertTrue(AlsoSealed.class.isSealed());
+        Assertions.assertFalse(AlsoFinal.class.isSealed());
+        Assertions.assertFalse(ImplicitlyFinal.class.isSealed());
+
+        Assertions.assertEquals("final", switchSealed(new Final()));
+        Assertions.assertEquals("non-sealed", switchSealed(new NonSealed()));
+        Assertions.assertEquals("sealed", switchSealed(new AlsoSealed()));
+        Assertions.assertEquals("implicitly final", switchSealed(new ImplicitlyFinal()));
+
+        SealedClient client = new SealedClient(new NonSealedChild());
+        Assertions.assertEquals("non-sealed", client.call());
+    }
+
+    private static String switchSealed(Sealed sealed) {
+        return switch (sealed) {
+            case AlsoSealed a -> a.alsoSealedMethod();
+            case Final f -> f.finalMethod();
+            case NonSealed ns -> ns.nonSealedMethod();
+            case ImplicitlyFinal r -> r.implicitlyFinalMethod();
+        };
+    }
+
+    private static class NonSealedChild extends NonSealed {}
+
+    private static class NotPermittedSealedChild /* implements Sealed */ {}
+
+    private static class SealedClient {
+        private Sealed s;
+
+        public SealedClient(Sealed s) {
+            this.s = s;
+        }
+
+        public String call() {
+            return switchSealed(s);
+        }
+    }
 
     @Test
     public void testStronglyEncapsulatedInternals() {
@@ -29,53 +90,69 @@ public class Java17 {
     }
 
     @Test
-    public void testSwitchPatternMatching() {
-        Assertions.assertEquals("String: Hello", switchOverClasses("Hello"));
-        Assertions.assertEquals("int: 1", switchOverClasses(1));
-        Assertions.assertEquals("long: 13", switchOverClasses(13L));
-        Assertions.assertEquals("boolean: true", switchOverClasses(true));
-        Assertions.assertEquals("null", switchOverClasses(null));
-        record Person(String name, String surname) {
-            @Override
-            public String toString() {
-                return "%s %s".formatted(name, surname);
-            }
-        }
-        Assertions.assertEquals("Object: John Doe", switchOverClasses(new Person("John", "Doe")));
-    }
-
-    private static String switchOverClasses(Object obj) {
-        return switch (obj) {
-            case String s -> String.format("String: %s", s);
-            case Integer i -> String.format("int: %d", i);
-            case Long l -> String.format("long: %d", l);
-            case Boolean b -> String.format("boolean: %s", b);
-            case null -> "null";
-            default -> "Object: " + obj;
-        };
-    }
-
-    @DisabledOnJre(JRE.JAVA_23)
-    @Test
     public void testRandomGeneratorFactory() {
-        var generators = ServiceLoader.load(RandomGenerator.class).stream()
-                .map(provider -> provider.type().getCanonicalName())
+        var defaultRandomGenerator = RandomGeneratorFactory.getDefault().create();
+        Assertions.assertEquals("jdk.internal.random.L32X64MixRandom", defaultRandomGenerator.getClass().getCanonicalName());
+
+        var generators = RandomGeneratorFactory.all()
+                .map(fac -> fac.create().getClass().getCanonicalName())
                 .peek(System.out::println)
                 .toList();
-
         Assertions.assertTrue(generators.contains("java.util.Random"));
-        var defaultRandomGenerator = RandomGeneratorFactory.getDefault().create();
-        Assertions.assertEquals("jdk.random.L32X64MixRandom", defaultRandomGenerator.getClass().getCanonicalName());
     }
 
     @Test
-    void testHexFormat() {
+    public void testHexFormat() {
         HexFormat hexFormat = HexFormat.of();
         String hex = hexFormat.formatHex(new byte[]{0x1A, 0x2B, 0x3C});
         Assertions.assertEquals("1a2b3c", hex);
         Assertions.assertArrayEquals(new byte[]{0x1A, 0x2B, 0x3C}, hexFormat.parseHex(hex));
         Assertions.assertFalse(HexFormat.isHexDigit('g'));
         Assertions.assertEquals(16 + 10, HexFormat.fromHexDigits("1a"));
+    }
+
+    @Test
+    public void testAlwaysStrictFloatingPointSemantics() {
+        Assertions.assertEquals(4, strictPower(2, 2));
+    }
+
+    // warning: [strictfp] as of release 17, all floating-point expressions are evaluated strictly and 'strictfp' is not required
+    @SuppressWarnings("strictfp")
+    public static strictfp double strictPower(double a, double b) {
+        return Math.pow(a, b);
+    }
+
+    @SuppressWarnings("removal")
+    @Test
+    public void testDeprecated() {
+        // warning: [removal] Applet in java.applet has been deprecated and marked for removal
+        Applet appletDeprecatedForRemoval;
+        // warning: [removal] SecurityManager in java.lang has been deprecated and marked for removal
+        SecurityManager securityManager = System.getSecurityManager();
+    }
+
+    @Test
+    public void testRmiActivation() {
+        Assertions.assertFalse(ModuleLayer.boot().findModule("java.rmi").stream().map(Module::getPackages)
+                .flatMap(Set::stream)
+                .anyMatch("java.rmi.activation"::equals));
+    }
+
+    @Test
+    public void testDeserializationFilters() throws IOException, ClassNotFoundException {
+        var file = new File("src/test/resources/bean");
+
+        var basePackageFilter = ObjectInputFilter.Config.createFilter("java.base/*;!*");
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            in.setObjectInputFilter(basePackageFilter);
+            Assertions.assertThrows(InvalidClassException.class, () -> in.readObject());
+        }
+
+        ObjectInputFilter onlyJavaBeansFilter = ObjectInputFilter.allowFilter(JavaBean.class::equals, ObjectInputFilter.Status.REJECTED);
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            in.setObjectInputFilter(onlyJavaBeansFilter);
+            Assertions.assertNotNull(in.readObject());
+        }
     }
 
 }
