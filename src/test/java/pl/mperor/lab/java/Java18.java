@@ -14,9 +14,21 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
-/**
- * Java 18 (March 2022)
- */
+/// Java 18™ (March 2022)
+/// [JDK 18](https://openjdk.org/projects/jdk/18)
+///
+/// - STANDARD FEATURES:
+///     - 400:	UTF-8 by Default
+///     - 408:	Simple Web Server
+///     - 421:	Deprecate Finalization for Removal
+///     - 418:	Internet-Address Resolution SPI (service-provider interface)
+///     - 413:	Code Snippets in Java API Documentation
+///     - 416:	Reimplement Core Reflection with Method Handles
+///
+/// - PREVIEW & INCUBATOR:
+///     - 419:	Foreign Function & Memory API (Second Incubator)
+///     - 420:	Pattern Matching for switch (Second Preview)
+///     - 417:	Vector API (Third Incubator)
 public class Java18 {
 
     @Test
@@ -86,8 +98,11 @@ public class Java18 {
 
     @Test
     public void testInetAddressResolution() throws UnknownHostException {
-        InetAddress address = InetAddress.getByName("localhost");
-        Assertions.assertTrue(address.isLoopbackAddress());
+        InetAddress localhost = InetAddress.getByName("localhost");
+        Assertions.assertTrue(localhost.isLoopbackAddress());
+
+        InetAddress google = InetAddress.getByName("google.com");
+        Assertions.assertNotNull(google.getAddress());
     }
 
     @Test

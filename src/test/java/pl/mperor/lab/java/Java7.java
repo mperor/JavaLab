@@ -7,6 +7,10 @@ import pl.mperor.lab.java.generic.Box;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ForkJoinPool;
@@ -139,6 +143,16 @@ public class Java7 {
             f1.fork();
             return f2.compute() + f1.join();
         }
+    }
+
+    @Test
+    public void testMethodHandlesVsCoreReflection() throws Throwable {
+        Method method = String.class.getMethod("isEmpty");
+        Assertions.assertTrue((boolean) method.invoke(""));
+
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        MethodHandle methodHandle = lookup.findVirtual(String.class, "isEmpty", MethodType.methodType(boolean.class));
+        Assertions.assertTrue((boolean) methodHandle.invoke(""));
     }
 
 }
