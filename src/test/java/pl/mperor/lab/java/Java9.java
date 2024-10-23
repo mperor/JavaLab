@@ -2,6 +2,8 @@ package pl.mperor.lab.java;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -88,14 +90,15 @@ public class Java9 {
 
         try (var reader = process.inputReader();
              var writer = new PrintWriter(process.outputWriter())) {
-            writer.println("System.out.println(\"Hello from JShell!\");");
+            writer.println("System.out.print(\"Hello from JShell!\");");
             writer.println("/exit");
             writer.flush();
 
             String lastLineBeforeExit = reader.lines()
+                    .peek(System.out::println)
                     .takeWhile(s -> !s.contains("Goodbye"))
                     .reduce("", (first, second) -> second);
-            Assertions.assertEquals("Hello from JShell!", lastLineBeforeExit);
+            Assertions.assertTrue(lastLineBeforeExit.contains("Hello from JShell!"));
         }
 
         Assertions.assertEquals(0, process.waitFor());

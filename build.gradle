@@ -14,7 +14,7 @@ ext {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation platform('org.junit:junit-bom:5.11.3')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'com.h2database:h2:2.2.224'
     testRuntimeOnly "org.graalvm.js:js:${graaljsVersion}"

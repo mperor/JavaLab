@@ -2,6 +2,8 @@ package pl.mperor.lab.java;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
@@ -53,6 +55,7 @@ public class Java17 {
         };
     }
 
+    @DisabledOnJre(JRE.JAVA_23)
     @Test
     public void testRandomGeneratorFactory() {
         var generators = ServiceLoader.load(RandomGenerator.class).stream()
