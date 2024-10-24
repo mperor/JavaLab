@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
 ///     - 394:	Pattern Matching for instanceof
 ///     - 390:	Warnings for Value-Based Classes
 ///     - 392:	Packaging Tool
-///     - 396:	Strongly Encapsulate JDK Internals by Default
-///     - 376:	ZGC: Concurrent Thread-Stack Processing
 ///     - 380:	Unix-Domain Socket Channels
+///     - 396:	Strongly Encapsulate JDK Internals by Default [Java17#testStronglyEncapsulatedInternals()]
+///     - 376:	ZGC: Concurrent Thread-Stack Processing
 ///     - 387:	Elastic Metaspace
 ///     - 347:	Enable C++14 Language Features
 ///     - 386:	Alpine Linux Port

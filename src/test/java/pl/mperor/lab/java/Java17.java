@@ -78,9 +78,14 @@ public class Java17 {
         }
     }
 
+    /**
+     * You may need this JVM argument:
+     * --add-opens java.base/java.lang=ALL-UNNAMED
+     */
     @Test
     public void testStronglyEncapsulatedInternals() {
         Assertions.assertThrows(InaccessibleObjectException.class, () -> deepLookIntoStringBytes("Hello"));
+        new ProcessBuilder("java", "--add-opens", "java.base/java.lang=ALL-UNNAMED");
     }
 
     private static byte[] deepLookIntoStringBytes(String string) throws IllegalAccessException, NoSuchFieldException {
@@ -132,7 +137,7 @@ public class Java17 {
     }
 
     @Test
-    public void testRmiActivation() {
+    public void testRmiActivationRemoved() {
         Assertions.assertFalse(ModuleLayer.boot().findModule("java.rmi").stream()
                 .map(Module::getPackages)
                 .flatMap(Set::stream)
