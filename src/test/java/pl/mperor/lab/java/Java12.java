@@ -23,7 +23,7 @@ public class Java12 {
         Assertions.assertThrows(IllegalStateException.class, () -> getTypeOfDayByNumber(0));
     }
 
-    private String getTypeOfDayByNumber(Integer dayOfWeek) {
+    private String getTypeOfDayByNumber(int dayOfWeek) {
         return switch (dayOfWeek) {
             case 1, 2, 3, 4, 5 -> "Working Day";
             case 6, 7 -> {
@@ -32,21 +32,6 @@ public class Java12 {
             }
             default -> throw new IllegalStateException("Unexpected value: " + dayOfWeek);
         };
-    }
-
-    @Test
-    public void testPatternMatchingInstanceOfAkaSmartCasting() {
-        Object o = "Hello String!";
-        if (o instanceof String s) {
-            Assertions.assertNotNull(s);
-            Assertions.assertInstanceOf(String.class, s);
-        }
-        Assertions.assertTrue(nonEmptyString("Hello World!"));
-        Assertions.assertFalse(nonEmptyString(null));
-    }
-
-    private static boolean nonEmptyString(Object obj) {
-        return (obj instanceof String str) && !str.isEmpty();
     }
 
     @Test

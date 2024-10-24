@@ -5,11 +5,16 @@ import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,5 +90,40 @@ public class Java4 {
         BufferedImage image = ImageIO.read(new File("src/test/resources/imageio.png"));
         Assertions.assertTrue(ImageIO.write(image, "jpg", File.createTempFile("imageio", ".jpg")));
     }
+    @Test
+    public void testServerClientSocketChannel() throws IOException, InterruptedException {
+        int port = 8888;
+        CountDownLatch serverReadyLatch = new CountDownLatch(1);
+
+        var executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(() -> {
+            try (ServerSocket serverSocket = ServerSocketChannel.open().bind(new InetSocketAddress(port)).socket()) {
+                serverReadyLatch.countDown();
+                handleConnectedClient(serverSocket);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        serverReadyLatch.await();
+        try (var clientSocket = SocketChannel.open(new InetSocketAddress("localhost", port));
+             var reader = new BufferedReader(new InputStreamReader(clientSocket.socket().getInputStream()));
+             var writer = new PrintWriter(clientSocket.socket().getOutputStream(), true)) {
+            writer.println("Hello Server!");
+            Assertions.assertEquals("Hello Client!", reader.readLine());
+        }
+
+        executorService.close();
+    }
+
+    private void handleConnectedClient(ServerSocket serverSocket) throws IOException {
+        try (var clientSocket = serverSocket.accept();
+             BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+            Assertions.assertEquals("Hello Server!", reader.readLine());
+            out.println("Hello Client!");
+        }
+    }
+
 
 }

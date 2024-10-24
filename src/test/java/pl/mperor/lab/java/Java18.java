@@ -83,7 +83,7 @@ public class Java18 {
     public void testFinalizeDeprecated() throws Throwable {
         var out = TestUtils.setTempSystemOut();
 
-        // warning: finalize() in Object has been deprecated and marked for removal
+        // warning: [removal] finalize() in Object has been deprecated and marked for removal
         var object = new Object() {
             @Override
             protected void finalize() throws Throwable {

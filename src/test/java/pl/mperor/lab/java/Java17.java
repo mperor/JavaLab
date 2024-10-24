@@ -133,7 +133,8 @@ public class Java17 {
 
     @Test
     public void testRmiActivation() {
-        Assertions.assertFalse(ModuleLayer.boot().findModule("java.rmi").stream().map(Module::getPackages)
+        Assertions.assertFalse(ModuleLayer.boot().findModule("java.rmi").stream()
+                .map(Module::getPackages)
                 .flatMap(Set::stream)
                 .anyMatch("java.rmi.activation"::equals));
     }
