@@ -17,24 +17,6 @@ import java.util.Locale;
 public class Java12 {
 
     @Test
-    public void testSwitchExpression() {
-        Assertions.assertEquals("Working Day", getTypeOfDayByNumber(1));
-        Assertions.assertEquals("Day Off", getTypeOfDayByNumber(6));
-        Assertions.assertThrows(IllegalStateException.class, () -> getTypeOfDayByNumber(0));
-    }
-
-    private String getTypeOfDayByNumber(int dayOfWeek) {
-        return switch (dayOfWeek) {
-            case 1, 2, 3, 4, 5 -> "Working Day";
-            case 6, 7 -> {
-                // code block example
-                yield "Day Off";
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + dayOfWeek);
-        };
-    }
-
-    @Test
     public void testStringIndentAndTransformMethods() {
         String text = "Hello\nJava 12\n";
         Assertions.assertEquals("  Hello\n  Java 12\n", text.indent(2));

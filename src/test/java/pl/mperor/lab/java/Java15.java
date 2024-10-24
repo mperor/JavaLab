@@ -23,9 +23,9 @@ import java.util.Locale;
 ///     - 371:	Hidden Classes
 ///     - 372:	Remove the Nashorn JavaScript Engine
 ///     - 373:	Reimplement the Legacy DatagramSocket API
-///     - 374:	Disable and Deprecate Biased Locking
-///     - 377:	ZGC: A Scalable Low-Latency Garbage Collector
-///     - 379:	Shenandoah: A Low-Pause-Time Garbage Collector
+///     - 374:	Disable and Deprecate Biased Locking (`-XX:+UseBiasedLocking`)
+///     - 377:	ZGC: A Scalable Low-Latency Garbage Collector (`-XX:+UseZGC`)
+///     - 379:	Shenandoah: A Low-Pause-Time Garbage Collector (`-XX:+UseShenandoahGC`)
 ///     - 381:	Remove the Solaris and SPARC Ports
 ///     - 385:	Deprecate RMI Activation for Removal [Java17#testRmiActivationRemoved()]
 ///
@@ -44,8 +44,20 @@ public class Java15 {
                     "password": "*****"
                 }
                 """;
-
         Assertions.assertTrue(json.contains("\"login\": \"admin\""));
+
+        String skippedLines = """
+                a\
+                b\
+                c\
+                """;
+        Assertions.assertEquals("abc", skippedLines);
+
+        String notSkippedSpaces = """
+                a \s
+                b\s
+                c""";
+        Assertions.assertEquals("a  \nb \nc", notSkippedSpaces);
     }
 
     @Test

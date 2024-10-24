@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 ///     - 395:	Records
 ///     - 394:	Pattern Matching for instanceof
 ///     - 390:	Warnings for Value-Based Classes
-///     - 392:	Packaging Tool
+///     - 392:	Packaging Tool `jpackage`
 ///     - 380:	Unix-Domain Socket Channels
 ///     - 396:	Strongly Encapsulate JDK Internals by Default [Java17#testStronglyEncapsulatedInternals()]
 ///     - 376:	ZGC: Concurrent Thread-Stack Processing
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 ///     - 338:	Vector API (Incubator)
 public class Java16 {
 
-    // POJOs
+    // POJOs with accessors (without getters)
     @Test
     public void testPairRecord() {
         var pair = Pair.of("Boy", "Girl");
