@@ -92,7 +92,7 @@ public class Java4 {
     }
     @Test
     public void testServerClientSocketChannel() throws IOException, InterruptedException {
-        int port = 8888;
+        int port = 8004;
         CountDownLatch serverReadyLatch = new CountDownLatch(1);
 
         var executorService = Executors.newSingleThreadExecutor();

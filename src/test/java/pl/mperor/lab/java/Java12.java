@@ -9,11 +9,26 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
+import java.util.AbstractMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
-/**
- * Java 12 (March 2019)
- */
+/// Java 12™ (March 2019)
+/// [JDK 12](https://openjdk.org/projects/jdk/12)
+///
+/// - STANDARD FEATURES:
+///     - 230:	Microbenchmark Suite
+///     - 334:	JVM Constants API
+///     - 340:	One AArch64 Port, Not Two
+///     - 341:	Default CDS Archives (`-Xshare:dump`)
+///     - 344:	Abortable Mixed Collections for G1
+///     - 346:	Promptly Return Unused Committed Memory from G1 (`-XX:SoftMaxHeapSize`)
+///
+/// - PREVIEW & INCUBATOR:
+///     - 189:	Shenandoah: A Low-Pause-Time Garbage Collector "Experimental" (`-XX:+UnlockExperimentalVMOptions -XX:+UseShenandoahGC`)
+///     - 325:	Switch Expressions (Preview)
 public class Java12 {
 
     @Test
@@ -40,7 +55,7 @@ public class Java12 {
         Assertions.assertEquals(generateFileHashMD5(file1), generateFileHashMD5(file2));
     }
 
-    private String generateFileHashMD5(Path file) throws IOException, NoSuchAlgorithmException, NoSuchAlgorithmException, IOException {
+    private String generateFileHashMD5(Path file) throws NoSuchAlgorithmException, IOException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] fileBytes = Files.readAllBytes(file);
         byte[] hashBytes = md.digest(fileBytes);
@@ -58,6 +73,31 @@ public class Java12 {
         shortNumberFormat.setMaximumFractionDigits(2);
         Assertions.assertEquals("1.2K", shortNumberFormat.format(1_200));
         Assertions.assertEquals("1.02M", shortNumberFormat.format(1_020_000));
+    }
+
+    @Test
+    public void testTeeingCollector() {
+        List<String> words = List.of("one", "two", "three");
+
+        AbstractMap.SimpleEntry<Integer, Long> pair = words.stream().collect(Collectors.teeing(
+                Collectors.summingInt(String::length),
+                Collectors.counting(),
+                AbstractMap.SimpleEntry::new)
+        );
+
+        Assertions.assertEquals(11, pair.getKey());
+        Assertions.assertEquals(3, pair.getValue());
+    }
+
+    @Test
+    public void testCompletableExceptionallyCompose() {
+        var errorThrowingPlanA = CompletableFuture.supplyAsync(() -> 1 / 0);
+        var noErrorPlanB = CompletableFuture.supplyAsync(() -> 0);
+
+        errorThrowingPlanA.exceptionallyComposeAsync(ex -> {
+            Assertions.assertInstanceOf(ArithmeticException.class, ex);
+            return noErrorPlanB;
+        }).thenAccept(result -> Assertions.assertEquals(0, result));
     }
 
 }

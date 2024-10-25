@@ -110,7 +110,7 @@ public class Java14 {
     public void testJFREvent() throws IOException, ParseException, InterruptedException {
         Configuration c = Configuration.getConfiguration("profile");
         try (RecordingStream rs = new RecordingStream(c)) {
-            rs.onEvent("jdk.ThreadSleep", event -> event.getDuration().equals(Duration.ofSeconds(100)));
+            rs.onEvent("jdk.ThreadSleep", event -> Assertions.assertTrue(event.getDuration().equals(Duration.ofSeconds(100))));
             rs.startAsync();
 
             System.out.println("Sleeping for 100ms...");

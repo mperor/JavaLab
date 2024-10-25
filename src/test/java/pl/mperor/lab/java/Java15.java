@@ -103,9 +103,10 @@ public class Java15 {
     }
 
     @Test
-    public void testDatagramSocket() throws SocketException {
-        DatagramSocket datagramSocket = new DatagramSocket();
-        Assertions.assertNotNull(datagramSocket);
+    public void testDatagramSocketImpl() throws SocketException {
+        try (DatagramSocket datagramSocket = new DatagramSocket(8015)) {
+            Assertions.assertNotNull(datagramSocket);
+        }
     }
 
 }

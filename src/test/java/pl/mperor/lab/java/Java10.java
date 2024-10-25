@@ -9,9 +9,22 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
- * Java 10 (March 2018)
- */
+/// Java 10™ (March 2018)
+/// [JDK 10](https://openjdk.org/projects/jdk/10)
+///
+/// - STANDARD FEATURES:
+///     - 286: Local-Variable Type Inference
+///     - 296: Consolidate the JDK Forest into a Single Repository
+///     - 304: Garbage-Collector Interface
+///     - 307: Parallel Full GC for G1
+///     - 310: Application Class-Data Sharing
+///     - 312: Thread-Local Handshakes
+///     - 314: Additional Unicode Language-Tag Extensions
+///     - 316: Heap Allocation on Alternative Memory Devices
+///     - 317: Experimental Java-Based JIT Compiler
+///     - 319: Root Certificates
+///     - 322: Time-Based Release Versioning
+///     - 313: Remove the Native-Header Generation Tool (javah)
 public class Java10 {
 
     @Test

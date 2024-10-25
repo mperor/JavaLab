@@ -52,7 +52,7 @@ public class Java18 {
 
     @Test
     public void testSimpleWebServer() throws IOException, InterruptedException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(9000), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(8018), 0);
         server.createContext("/hello", exchange -> {
             String response = "Hello World!";
             exchange.sendResponseHeaders(200, response.getBytes().length);
@@ -62,7 +62,7 @@ public class Java18 {
         });
         server.start();
         Assertions.assertNotNull(server);
-        Assertions.assertEquals("Hello World!", curlResponse("http://127.0.0.1:9000/hello"));
+        Assertions.assertEquals("Hello World!", curlResponse("http://127.0.0.1:8018/hello"));
 
         server.stop(0);
     }
