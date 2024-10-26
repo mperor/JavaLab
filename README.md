@@ -31,5 +31,7 @@ This project includes unit tests for key functionalities introduced in each Java
 - [Java 17](src/test/java/pl/mperor/lab/java/Java17.java)
 - [Java 18](src/test/java/pl/mperor/lab/java/Java18.java)
 - [Java 19](src/test/java/pl/mperor/lab/java/Java19.java)
+- [Java 20](src/test/java/pl/mperor/lab/java/Java20.java)
+- [Java 21](src/test/java/pl/mperor/lab/java/Java21.java)
 
 For detailed examples and tests of each feature, please refer to the individual source files linked above.
