@@ -1,34 +1,30 @@
-plugins {
-    id 'java'
-}
-
 group = 'pl.mperor.lab.java'
 version = '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
+subprojects {
+    apply plugin: 'java'
 
-ext {
-    graaljsVersion = '24.1.1'
-}
+    group = rootProject.group
+    version = rootProject.version
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.11.3')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'com.h2database:h2:2.2.224'
-    testRuntimeOnly "org.graalvm.js:js:${graaljsVersion}"
-    testImplementation "org.graalvm.js:js-scriptengine:${graaljsVersion}"
-}
+    dependencies {
+        testImplementation platform('org.junit:junit-bom:5.11.3')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+    }
 
-test {
-    useJUnitPlatform()
-}
+    test {
+        useJUnitPlatform()
+    }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
+    repositories {
+        mavenCentral()
+    }
 
-tasks.withType(Test) {
-    jvmArgs("-Dfile.encoding=UTF-8")
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test) {
+        jvmArgs("-Dfile.encoding=UTF-8")
+    }
 }
