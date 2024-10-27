@@ -49,6 +49,7 @@ public class Java6 {
         int compilationResult = compiler.run(null, null, null, sourceFile.getAbsolutePath());
         Assertions.assertEquals(0, compilationResult, "Compilation should succeed with result 0!");
         Assertions.assertTrue(sourceFile.delete(), "Source file should be deleted after compilation");
+        Assertions.assertTrue(new File("./HelloWorld.class").delete(), "Now compilation result can be deleted!");
     }
 
     @Test

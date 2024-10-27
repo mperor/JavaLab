@@ -1,0 +1,10 @@
+ext {
+    graaljsVersion = '24.1.1'
+}
+
+dependencies {
+    testRuntimeOnly 'com.h2database:h2:2.2.224'
+    testRuntimeOnly "org.graalvm.js:js:${graaljsVersion}"
+    testImplementation "org.graalvm.js:js-scriptengine:${graaljsVersion}"
+}
+
