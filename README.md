@@ -34,5 +34,6 @@ This project includes unit tests for key functionalities introduced in each Java
 - [Java 20](src/test/java/pl/mperor/lab/java/Java20.java)
 - [Java 21](src/test/java/pl/mperor/lab/java/Java21.java)
 - [Java 22](src/test/java/pl/mperor/lab/java/Java22.java)
+- [Java 23](src/test/java/pl/mperor/lab/java/Java23.java)
 
 For detailed examples and tests of each feature, please refer to the individual source files linked above.
