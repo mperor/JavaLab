@@ -2,7 +2,7 @@ package pl.mperor.lab.java;
 
 import org.junit.jupiter.api.Test;
 
-public class JavaBasics {
+public class JavaFundamentalsTest {
 
     @Test
     public void testTypesOfComments() {
