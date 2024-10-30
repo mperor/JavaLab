@@ -51,7 +51,6 @@ public class Java4 {
 
     private String getTestHtml() {
         return """
-                \
                 <!DOCTYPE html>
                     <html lang="en">
                     <head>
