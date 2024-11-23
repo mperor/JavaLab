@@ -23,7 +23,7 @@ public class ArraysTest {
 
     @Test
     public void testSquareMatrix() {
-        int[][] multi = new int[2][2];
-        Assertions.assertArrayEquals(new int[][]{{0, 0}, {0, 0}}, multi);
+        int[][] matrix = new int[2][2];
+        Assertions.assertArrayEquals(new int[][]{{0, 0}, {0, 0}}, matrix);
     }
 }
