@@ -1,2 +1,2 @@
 rootProject.name = 'JavaLab'
-include 'JavaReleases', 'FirstSteps'
+include 'JavaReleases', 'FirstSteps', 'DesignPatterns'

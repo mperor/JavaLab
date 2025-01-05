@@ -49,6 +49,7 @@ jobs:
         files: |
           FirstSteps/build/test-results/test/*.xml
           JavaReleases/build/test-results/test/*.xml
+          DesignPatterns/build/test-results/test/*.xml
 
     - name: Set badge color
       shell: bash
