@@ -1,4 +1,4 @@
-# JDK key features
+# JavaReleases - Key features by version
 
 ## Description
 

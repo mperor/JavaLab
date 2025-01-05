@@ -5,10 +5,10 @@
 
 ## Description
 **JavaLab** serves as an experimental playground and knowledge base for the Java programming language. 
-The goal of this project is to maintain a set of tests that explore various nuances and intricacies of Java code. 
+The goal of this project is to maintain a set of tests that explore various nuances and complexities of Java code. 
 Each test aims to provide clear examples and answers to common (and not-so-common) challenges developers face when working with Java.
 
 ## Modules
 
-- **[JDK](jdk/README.md): JDK key features**
-- **[BASICS](basics/README.md): Java basics**
+- **[JavaReleases](JavaReleases/README.md): Key features by version**
+- **[FirstSteps](FirstSteps/README.md): Java Basics**
