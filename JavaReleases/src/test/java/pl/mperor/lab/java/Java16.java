@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
-import pl.mperor.lab.TestUtils;
+import pl.mperor.lab.common.TestUtils;
 
 import java.io.IOException;
 import java.net.StandardProtocolFamily;

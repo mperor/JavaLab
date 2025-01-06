@@ -1,4 +1,4 @@
-package pl.mperor.lab;
+package pl.mperor.lab.common;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -26,19 +26,19 @@ public class TestUtils {
             return out.toString();
         }
 
-        public TestList<String> lines() {
+        public ReadableList<String> lines() {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(out.toByteArray())))) {
-                return reader.lines().collect(Collectors.toCollection(TestArrayList::new));
+                return reader.lines().collect(Collectors.toCollection(ReadableArrayList::new));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public static class TestArrayList<E> extends ArrayList<E> implements TestList<E> {
+    public static class ReadableArrayList<E> extends ArrayList<E> implements ReadableList<E> {
     }
 
-    public interface TestList<E> extends List<E> {
+    public interface ReadableList<E> extends List<E> {
         default E getSecond() {
             return getNext(1);
         }
@@ -47,11 +47,11 @@ public class TestUtils {
             return getNext(2);
         }
 
-        private E getNext(int id) {
-            if (this.isEmpty()) {
+        private E getNext(int index) {
+            if (this.isEmpty() && index >= size()) {
                 throw new NoSuchElementException();
             } else {
-                return this.get(id);
+                return this.get(index);
             }
         }
     }

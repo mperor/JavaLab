@@ -3,7 +3,7 @@ package pl.mperor.lab.java;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pl.mperor.lab.TestUtils;
+import pl.mperor.lab.common.TestUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
