@@ -47,6 +47,10 @@ public class TestUtils {
             return getNext(2);
         }
 
+        default E getForth() {
+            return getNext(3);
+        }
+
         private E getNext(int index) {
             if (this.isEmpty() && index >= size()) {
                 throw new NoSuchElementException();
