@@ -1,4 +1,4 @@
-package pl.mperor.lab.java.design.pattern.structural.decorator;
+package pl.mperor.lab.java.design.pattern.structural.decorator.lambda.expression;
 
 import java.util.Arrays;
 import java.util.function.UnaryOperator;

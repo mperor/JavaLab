@@ -1,9 +1,9 @@
-package pl.mperor.lab.java.design.pattern.structural.decorator;
+package pl.mperor.lab.java.design.pattern.structural.decorator.lambda.expression;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TextProcessorTest {
+public class TextProcessorAndValidatorTest {
 
     @Test
     public void shouldAllowToCreateTextProcessorAsChainOfFunctions() {
@@ -21,6 +21,19 @@ public class TextProcessorTest {
                         s -> s.substring(0, 3)
                 ).apply("Hello World")
         );
+    }
+
+    @Test
+    public void shouldAllowToCreateTextValidator() {
+        Assertions.assertTrue(
+                TextValidator.notEmpty()
+                        .and(TextValidator.nan())
+                        .and(TextValidator.lengthBetween(1, 3))
+                        .test("abc")
+        );
+
+        var blankOrNumeric = TextValidator.numeric().or(String::isBlank);
+        Assertions.assertTrue(blankOrNumeric.test(" ") && blankOrNumeric.test("123"));
     }
 
 }
