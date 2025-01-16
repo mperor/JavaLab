@@ -9,8 +9,8 @@ public class TextProcessorAndValidatorTest {
     public void shouldAllowToCreateTextProcessorAsChainOfFunctions() {
         Assertions.assertEquals("prefix@Hello World@suffix",
                 TextProcessor.of(String::strip)
-                        .chain(s -> "prefix" + s)
-                        .chain(s -> s + "suffix")
+                        .andThen(s -> "prefix" + s)
+                        .andThen(s -> s + "suffix")
                         .apply("  @Hello World@")
         );
 
