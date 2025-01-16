@@ -1,17 +1,18 @@
 package pl.mperor.lab.java.design.pattern.structural.decorator.lambda.expression;
 
 import java.util.Arrays;
-import java.util.function.UnaryOperator;
 
 @FunctionalInterface
-public interface TextProcessor extends UnaryOperator<String> {
+public interface TextProcessor {
+
+    String process(String text);
 
     default TextProcessor chain(TextProcessor after) {
-        return input -> after.apply(this.apply(input));
+        return input -> after.process(this.process(input));
     }
 
     static TextProcessor identity() {
-        return s -> s;
+        return text -> text;
     }
 
     static TextProcessor of(TextProcessor processor) {
