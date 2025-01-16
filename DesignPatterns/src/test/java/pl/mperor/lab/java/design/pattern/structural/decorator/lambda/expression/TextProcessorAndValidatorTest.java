@@ -11,7 +11,7 @@ public class TextProcessorAndValidatorTest {
                 TextProcessor.of(String::strip)
                         .chain(s -> "prefix" + s)
                         .chain(s -> s + "suffix")
-                        .apply("  @Hello World@")
+                        .process("  @Hello World@")
         );
 
         Assertions.assertEquals("HEX",
@@ -19,7 +19,7 @@ public class TextProcessorAndValidatorTest {
                         String::toUpperCase,
                         s -> s.replace("L", "X"),
                         s -> s.substring(0, 3)
-                ).apply("Hello World")
+                ).process("Hello World")
         );
     }
 
