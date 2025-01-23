@@ -12,9 +12,9 @@ public class AnimalFactoryEnumImpl implements AnimalFactory<AnimalType> {
     }
 
     public enum AnimalType {
-        DOG(() -> new Dog()),
-        CAT(() -> new Cat()),
-        FLY(() -> new Fly());
+        DOG(Dog::new),
+        CAT(Cat::new),
+        FLY(Fly::new);
 
         private final Supplier<Animal> creator;
 

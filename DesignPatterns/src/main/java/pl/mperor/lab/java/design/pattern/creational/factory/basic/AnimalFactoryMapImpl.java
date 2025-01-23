@@ -9,9 +9,9 @@ public class AnimalFactoryMapImpl implements AnimalFactory<String> {
     private final Map<String, Supplier<Animal>> nameToCreator = new HashMap<>();
 
     public AnimalFactoryMapImpl() {
-        nameToCreator.put(Fly.NAME, () -> new Fly());
-        nameToCreator.put(Dog.NAME, () -> new Dog());
-        nameToCreator.put(Cat.NAME, () -> new Cat());
+        nameToCreator.put(Fly.NAME, Fly::new);
+        nameToCreator.put(Dog.NAME, Dog::new);
+        nameToCreator.put(Cat.NAME, Cat::new);
     }
 
     public Animal getNewInstance(String type) {
