@@ -15,6 +15,7 @@ This project explores various design patterns and their implementations in moder
 
 - [Factory](src/main/java/pl/mperor/lab/java/design/pattern/creational/factory) 🏭
 - [Builder](src/main/java/pl/mperor/lab/java/design/pattern/creational/builder) 🏗️
+- [Prototype](src/main/java/pl/mperor/lab/java/design/pattern/creational/prototype) 🧬
 - [Singleton](src/main/java/pl/mperor/lab/java/design/pattern/creational/singleton) 1️⃣
 
 ### Structural Design Patterns 🎁
