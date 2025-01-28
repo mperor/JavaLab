@@ -8,6 +8,7 @@ This project explores various design patterns and their implementations in moder
 
 ### Behavioral Design Patterns 💪
 
+- [Command](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/command) 📝
 - [Strategy](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/strategy) 🎯
 - [Execute Around Method (EAM)](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/eam) ⭕
 
