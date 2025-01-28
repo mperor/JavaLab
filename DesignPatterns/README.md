@@ -2,15 +2,17 @@
 
 ## Description 📄
 
-This project explores various design patterns and their implementations in modern Java. It aims to provide developers with practical examples and best practices for using design patterns to create robust and maintainable code.
+This project explores various design patterns and their implementations in modern Java. It aims to provide developers
+with practical examples and best practices for using design patterns to create robust and maintainable code.
 
 ## Design Pattern Catalog 📚
 
 ### Behavioral Design Patterns 💪
 
 - [Command](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/command) 📝
-- [Strategy](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/strategy) 🎯
 - [Execute Around Method (EAM)](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/eam) ⭕
+- [Strategy](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/strategy) 🎯
+- [Observer](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/observer) 👀
 
 ### Creational Design Patterns 🏭
 
