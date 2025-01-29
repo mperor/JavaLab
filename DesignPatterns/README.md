@@ -11,8 +11,9 @@ with practical examples and best practices for using design patterns to create r
 
 - [Command](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/command) 📝
 - [Execute Around Method (EAM)](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/eam) ⭕
-- [Strategy](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/strategy) 🎯
 - [Observer](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/observer) 👀
+- [Strategy](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/strategy) 🎯
+- [Template Method](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/template/method) 📋
 
 ### Creational Design Patterns 🏭
 
