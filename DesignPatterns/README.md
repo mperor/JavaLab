@@ -15,6 +15,7 @@ with practical examples and best practices for using design patterns to create r
 - [State](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/state) 📜
 - [Strategy](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/strategy) 🎯
 - [Template Method](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/template/method) 📋
+- [Visitor](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/visitor) 🧳
 
 ### Creational Design Patterns 🏭
 
