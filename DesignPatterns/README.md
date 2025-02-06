@@ -9,6 +9,7 @@ with practical examples and best practices for using design patterns to create r
 
 ### Behavioral Design Patterns 💪
 
+- [Chain of Responsibility](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/chain/of/responsibility) 🔗
 - [Command](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/command) 📝
 - [Execute Around Method (EAM)](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/eam) ⭕
 - [Observer](src/main/java/pl/mperor/lab/java/design/pattern/behavioral/observer) 👀
