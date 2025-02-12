@@ -1,6 +1,6 @@
 package pl.mperor.lab.java.design.pattern.creational.factory.basic;
 
-public class AnimalFactorySwitchExpressionImpl implements AnimalFactory<Animal> {
+class AnimalFactorySwitchExpressionImpl implements AnimalFactory<Animal> {
 
     public static class Instances {
         public static final Animal CAT = new Cat();

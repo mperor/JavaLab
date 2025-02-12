@@ -1,6 +1,6 @@
 package pl.mperor.lab.java.design.pattern.creational.factory.abs;
 
-public class DevStarterFactory implements StarterFactory {
+class DevStarterFactory implements StarterFactory {
 
     @Override
     public DatabaseConnection getDatabaseConnection() {

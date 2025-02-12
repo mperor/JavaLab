@@ -32,5 +32,4 @@ public class AppStarterAbstractFactoryTest {
 
         TestUtils.resetSystemOut();
     }
-
 }

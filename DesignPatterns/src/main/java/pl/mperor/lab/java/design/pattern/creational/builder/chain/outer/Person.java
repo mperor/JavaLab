@@ -9,6 +9,7 @@ public class Person {
     private final LocalDate dateOfBirth;
     private final String address;
 
+    // Deep copy is required here!
     private Person(PersonBuilder builder) {
         this.firstName = builder.getFirstName();
         this.lastName = builder.getLastName();
@@ -35,5 +36,4 @@ public class Person {
     public static Person build(PersonBuilder builder) {
         return new Person(builder);
     }
-
 }

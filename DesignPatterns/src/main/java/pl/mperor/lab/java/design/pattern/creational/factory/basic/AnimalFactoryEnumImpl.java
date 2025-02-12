@@ -4,14 +4,14 @@ import java.util.function.Supplier;
 
 import static pl.mperor.lab.java.design.pattern.creational.factory.basic.AnimalFactoryEnumImpl.AnimalType;
 
-public class AnimalFactoryEnumImpl implements AnimalFactory<AnimalType> {
+class AnimalFactoryEnumImpl implements AnimalFactory<AnimalType> {
 
     @Override
     public Animal getNewInstance(AnimalType type) {
         return type.getCreator().get();
     }
 
-    public enum AnimalType {
+    enum AnimalType {
         DOG(Dog::new),
         CAT(Cat::new),
         FLY(Fly::new);
@@ -26,5 +26,4 @@ public class AnimalFactoryEnumImpl implements AnimalFactory<AnimalType> {
             return creator;
         }
     }
-
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class Category {
+
     private static final Map<String, Category> CACHE = new HashMap<>();
 
     private final String name;

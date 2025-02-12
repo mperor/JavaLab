@@ -17,6 +17,7 @@ public class SheepPrototypeTest {
         Assertions.assertNotSame(originalSheep, clonedSheep);
         Assertions.assertSame(originalSheep.getDna(), clonedSheep.getDna());
         Assertions.assertSame(originalSheep.getBreed(), clonedSheep.getBreed());
+        Assertions.assertNotEquals(originalSheep.getName(), clonedSheep.getName());
         Assertions.assertNotEquals(originalSheep.getYearOfBirth(), clonedSheep.getYearOfBirth());
     }
 }

@@ -44,5 +44,4 @@ public class PersonBuilder {
     public String getAddress() {
         return address;
     }
-
 }

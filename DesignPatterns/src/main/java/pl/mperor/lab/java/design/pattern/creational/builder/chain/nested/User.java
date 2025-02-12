@@ -14,15 +14,15 @@ public class User {
     private User() {
     }
 
+    // Deep copy is required here!
     private User(User user) {
         this.id = ID_GENERATOR.getAndIncrement();
-        // Deep copy is required here!
         this.name = user.name;
         this.password = user.password;
         this.email = user.email;
     }
 
-    int getId() {
+    public int getId() {
         return id;
     }
 

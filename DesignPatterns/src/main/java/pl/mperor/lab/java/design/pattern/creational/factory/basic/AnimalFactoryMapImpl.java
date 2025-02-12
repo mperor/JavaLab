@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class AnimalFactoryMapImpl implements AnimalFactory<String> {
+class AnimalFactoryMapImpl implements AnimalFactory<String> {
 
     private final Map<String, Supplier<Animal>> nameToCreator = new HashMap<>();
 

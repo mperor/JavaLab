@@ -1,6 +1,6 @@
 package pl.mperor.lab.java.design.pattern.creational.factory.basic;
 
-public record Fly() implements Animal {
+record Fly() implements Animal {
 
     public static final String NAME = "Fly";
 
@@ -8,5 +8,4 @@ public record Fly() implements Animal {
     public String toString() {
         return NAME;
     }
-
 }

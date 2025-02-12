@@ -13,9 +13,9 @@ public class Task {
     private Task() {
     }
 
+    // Deep copy is required here!
     private Task(Task task) {
         this.id = ID_GENERATOR.getAndIncrement();
-        // Deep copy is required here!
         this.description = task.description;
         this.done = task.done;
     }

@@ -3,7 +3,7 @@ package pl.mperor.lab.java.design.pattern.creational.prototype;
 import java.time.Year;
 import java.util.function.Function;
 
-public class Sheep {
+class Sheep {
 
     private String name;
     private DNA dna;
@@ -28,10 +28,6 @@ public class Sheep {
         return name;
     }
 
-    void setName(String name) {
-        this.name = name;
-    }
-
     DNA getDna() {
         return dna;
     }
@@ -44,11 +40,11 @@ public class Sheep {
         return breed;
     }
 
-    public Sheep clone(Function<CloneBuilder, Sheep> cloning) {
+    Sheep clone(Function<CloneBuilder, Sheep> cloning) {
         return cloning.apply(new CloneBuilder(new Sheep(this)));
     }
 
-    public class CloneBuilder {
+    class CloneBuilder {
         private Sheep clone;
 
         public CloneBuilder(Sheep clone) {

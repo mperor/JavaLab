@@ -1,6 +1,6 @@
 package pl.mperor.lab.java.design.pattern.creational.factory.basic;
 
-public class AnimalFactoryClassImpl implements AnimalFactory<Class<? extends Animal>> {
+class AnimalFactoryClassImpl implements AnimalFactory<Class<? extends Animal>> {
 
     @Override
     public Animal getNewInstance(Class<? extends Animal> type) {

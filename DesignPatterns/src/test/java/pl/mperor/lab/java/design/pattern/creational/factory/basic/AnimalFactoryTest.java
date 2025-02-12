@@ -12,8 +12,8 @@ public class AnimalFactoryTest {
     public void animalFactoryMapImplShouldBeAbleToCreateAnimalsByNames() {
         AnimalFactory<String> factory = new AnimalFactoryMapImpl();
         Assertions.assertInstanceOf(Dog.class, factory.getNewInstance("Dog"));
-        Assertions.assertInstanceOf(Fly.class, factory.getNewInstance("Fly"));
-        Assertions.assertInstanceOf(Cat.class, factory.getNewInstance("Cat"));
+        Assertions.assertInstanceOf(Fly.class, factory.getNewInstance(Fly.class.getSimpleName()));
+        Assertions.assertInstanceOf(Cat.class, factory.getNewInstance(Cat.NAME));
 
         Assertions.assertNotSame(factory.getNewInstance("Dog"), factory.getNewInstance("Dog"));
         Assertions.assertThrows(IllegalArgumentException.class, () -> factory.getNewInstance("Fish"));
