@@ -60,4 +60,11 @@ public class TestUtils {
         }
     }
 
+    public static long measureExecutionTimeMillis(Runnable task) {
+        long startTime = System.currentTimeMillis();
+        task.run();
+        long endTime = System.currentTimeMillis();
+        return endTime - startTime;
+    }
+
 }
