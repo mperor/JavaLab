@@ -8,4 +8,3 @@ dependencies {
     testImplementation "org.graalvm.js:js-scriptengine:${graaljsVersion}"
     implementation project(':Common')
 }
-
