@@ -84,6 +84,25 @@ public class Java16 {
         return (obj instanceof String str) && !str.isEmpty();
     }
 
+    @Test
+    public void testMapMultiForManagingExceptionsInParsing() {
+        String valuesAsString = """
+                1
+                2
+                @@@@@ buggy
+                3""";
+
+        var parsed = valuesAsString.lines()
+                .mapMultiToInt((line, consumer) -> {
+                    try {
+                        int i = Integer.parseInt(line);
+                        consumer.accept(i);
+                    } catch (NumberFormatException _) {}
+                }).toArray();
+
+        Assertions.assertArrayEquals(new int[]{1, 2, 3}, parsed);
+    }
+
     @SuppressWarnings({"removal", "synchronization"})
     @Test
     public void testValueBasedClasses() {
