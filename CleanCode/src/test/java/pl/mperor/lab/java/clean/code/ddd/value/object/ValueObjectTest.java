@@ -5,9 +5,18 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-
+/**
+ * 🧩 Value Object
+ *
+ * <p>A small simple object, like money or a date range, whose equality isn't based on identity.
+ *
+ * <p><b>Key Traits:</b>
+ * - Immutable 🚫
+ * - Equality by values ✅
+ * - Reusable & shareable ♻️
+ */
 class ValueObjectTest {
 
     @Test
@@ -33,11 +42,11 @@ class ValueObjectTest {
 
     @Test
     void shouldAllowToUseDateTimeRangeAsValueObject() {
-        Assertions.assertTrue(new DateTimeRange(LocalDateTime.MIN, LocalDateTime.MAX)
-                .isWithinRange(LocalDateTime.now()));
-        Assertions.assertTrue(new DateTimeRange(LocalDateTime.MIN, LocalDateTime.MAX)
-                .isWithinRange(LocalDateTime.MIN));
-        Assertions.assertTrue(new DateTimeRange(LocalDateTime.MIN, LocalDateTime.MAX)
-                .isWithinRange(LocalDateTime.MAX));
+        Assertions.assertTrue(new DateRange(LocalDate.MIN, LocalDate.MAX)
+                .isWithinRange(LocalDate.now()));
+        Assertions.assertTrue(new DateRange(LocalDate.MIN, LocalDate.MAX)
+                .isWithinRange(LocalDate.MIN));
+        Assertions.assertTrue(new DateRange(LocalDate.MIN, LocalDate.MAX)
+                .isWithinRange(LocalDate.MAX));
     }
 }

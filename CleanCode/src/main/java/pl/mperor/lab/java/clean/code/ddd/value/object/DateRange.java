@@ -1,10 +1,10 @@
 package pl.mperor.lab.java.clean.code.ddd.value.object;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-record DateTimeRange(LocalDateTime start, LocalDateTime end) {
+record DateRange(LocalDate start, LocalDate end) {
 
-    DateTimeRange {
+    DateRange {
         if (start == null || end == null) {
             throw new IllegalArgumentException("Date range start & end cannot be null!");
         }
@@ -13,7 +13,7 @@ record DateTimeRange(LocalDateTime start, LocalDateTime end) {
         }
     }
 
-    boolean isWithinRange(LocalDateTime dateTime) {
+    boolean isWithinRange(LocalDate dateTime) {
         return !dateTime.isBefore(start) && !dateTime.isAfter(end);
     }
 }
