@@ -21,7 +21,7 @@ class ValueObjectTest {
 
     @Test
     void shouldAllowToUseMoneyAsValueObject() {
-        var money = Money.of(BigDecimal.ZERO);
+        var money = Money.ZERO;
         Assertions.assertEquals(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN), money.amount());
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Money(null));
