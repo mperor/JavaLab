@@ -118,6 +118,7 @@ public class Java7 {
     public void testForkJoinFibonacci() {
         int proc = Runtime.getRuntime().availableProcessors();
         ForkJoinPool pool = ForkJoinPool.commonPool();
+        System.out.printf("ForkJoinPool parallelism size: 🥚[%s]%n", pool.getParallelism());
         Assertions.assertEquals(proc - 1, pool.getParallelism());
 
         int[] fibonacciResults = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55};
