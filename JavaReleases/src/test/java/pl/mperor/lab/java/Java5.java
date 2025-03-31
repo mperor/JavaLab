@@ -9,8 +9,8 @@ import java.lang.annotation.*;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
@@ -111,6 +111,25 @@ public class Java5 {
         executor.close();
         Assertions.assertEquals("Task 1 Task 2 Task 3 ", out.all());
         TestUtils.resetSystemOut();
+    }
+
+    @Test
+    public void testScheduledExecutor() throws InterruptedException {
+        var counter = new AtomicInteger(0);
+        var latch = new CountDownLatch(2);
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        ScheduledFuture<?> future = executor.scheduleAtFixedRate(() -> {
+            counter.getAndIncrement();
+            latch.countDown();
+        }, 0, 100, TimeUnit.MILLISECONDS);
+
+        boolean completed = latch.await(300, TimeUnit.MILLISECONDS);
+        Assertions.assertTrue(completed, "Task did not execute twice in time");
+        Assertions.assertEquals(2, counter.get());
+
+        future.cancel(true);
+        executor.shutdownNow();
     }
 
     @Test
