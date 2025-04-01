@@ -1,4 +1,4 @@
-package pl.mperor.lab.java.design.pattern.behavioral.visitor;
+package pl.mperor.lab.java.design.pattern.behavioral.visitor.customer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
