@@ -8,13 +8,14 @@ subprojects {
     version = rootProject.version
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_24
-        targetCompatibility = JavaVersion.VERSION_24
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
 
     dependencies {
         testImplementation platform('org.junit:junit-bom:5.11.3')
         testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
     test {
