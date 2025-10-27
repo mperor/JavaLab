@@ -12,7 +12,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -35,7 +34,7 @@ public class Java4 {
 
     @Test
     public void testNewInputOutputAkaNIO() throws IOException {
-        Path path = Paths.get("src", "test", "resources", "nio.txt");
+        Path path = Path.of("src", "test", "resources", "nio.txt");
         byte[] fileBytes = Files.readAllBytes(path);
         String content = new String(fileBytes);
         Assertions.assertEquals("Hello NIO!", content);
@@ -44,12 +43,12 @@ public class Java4 {
     @Test
     public void testRegex() {
         Pattern pattern = Pattern.compile("<title>(.*)</title>", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(getTestHtml());
+        Matcher matcher = pattern.matcher(createTestHtml());
         Assertions.assertTrue(matcher.find());
         Assertions.assertEquals("Title", matcher.group(1));
     }
 
-    private String getTestHtml() {
+    private String createTestHtml() {
         return """
                 <!DOCTYPE html>
                     <html lang="en">
@@ -89,6 +88,7 @@ public class Java4 {
         BufferedImage image = ImageIO.read(new File("src/test/resources/imageio.png"));
         Assertions.assertTrue(ImageIO.write(image, "jpg", File.createTempFile("imageio", ".jpg")));
     }
+
     @Test
     public void testServerClientSocketChannel() throws IOException, InterruptedException {
         int port = 8004;
@@ -123,6 +123,5 @@ public class Java4 {
             out.println("Hello Client!");
         }
     }
-
 
 }

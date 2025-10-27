@@ -27,14 +27,14 @@ public class Java3 {
         String bindingName = "hello";
         String bindingResult = "Hello World!";
 
-        Context context = new InitialContext();
-        context.bind(bindingName, bindingResult);
-        String lookupResult = (String) context.lookup(bindingName);
+        Context ctx = new InitialContext();
+        ctx.bind(bindingName, bindingResult);
+        String lookupResult = (String) ctx.lookup(bindingName);
         Assertions.assertEquals(bindingResult, lookupResult);
 
-        context.unbind(bindingName);
+        ctx.unbind(bindingName);
         Assertions.assertThrows(NamingException.class, () -> {
-            context.lookup(bindingName);
+            ctx.lookup(bindingName);
         });
     }
 

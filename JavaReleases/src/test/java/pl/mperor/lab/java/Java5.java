@@ -31,7 +31,7 @@ public class Java5 {
         Box rawBox = new Box();
         rawBox.setContent("Hello").setContent(1);
         Assertions.assertThrows(ClassCastException.class, () -> {
-            String rawBoxContent = (String) rawBox.getContent();
+            String wrongTypeContent = (String) rawBox.getContent();
         });
         Integer rawBoxContent = (Integer) rawBox.getContent();
         Assertions.assertEquals(1, rawBoxContent);

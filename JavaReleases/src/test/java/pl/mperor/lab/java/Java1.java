@@ -55,7 +55,7 @@ public class Java1 {
     }
 
     private void assertJavaBeanSerializationAndDeserialization(JavaBean bean) throws IOException, ClassNotFoundException {
-        var file = new File("src/test/resources/bean");
+        var file = new File("src/test/resources/bean.bin");
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
             out.writeObject(bean);
         }
@@ -107,13 +107,13 @@ public class Java1 {
         HelloService stub = (HelloService) registry.lookup("HelloService");
 
         // Call the remote method and verify the result
-        Assertions.assertEquals("Hello World!", stub.sayHello());
+        Assertions.assertEquals("Hello World!", stub.getMessage());
 
         executor.shutdown();
     }
 
     interface HelloService extends Remote {
-        String sayHello() throws RemoteException;
+        String getMessage() throws RemoteException;
     }
 
     static class HelloServiceImpl extends UnicastRemoteObject implements HelloService {
@@ -122,7 +122,7 @@ public class Java1 {
         }
 
         @Override
-        public String sayHello() throws RemoteException {
+        public String getMessage() throws RemoteException {
             return "Hello World!";
         }
     }
