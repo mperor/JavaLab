@@ -72,6 +72,11 @@ public class Java8 {
         assertFunctionalInterface(Testable.class);
     }
 
+    @FunctionalInterface
+    public interface Testable {
+        void test();
+    }
+
     private static void assertFunctionalInterface(Class<?> clazz) {
         if (!clazz.isInterface()) {
             Assertions.fail("Clazz is not an interface!");
@@ -84,11 +89,6 @@ public class Java8 {
 
         Assertions.assertTrue(clazz.isAnnotationPresent(FunctionalInterface.class) || 1 == abstractMethodCount,
                 "Functional interface should contain exactly one abstract method, but @FunctionalInterface is optional!");
-    }
-
-    @FunctionalInterface
-    public interface Testable {
-        void test();
     }
 
     @Test
