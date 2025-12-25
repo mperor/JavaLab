@@ -146,7 +146,7 @@ public class Java17 {
 
     @Test
     public void testDeserializationFilters() throws IOException, ClassNotFoundException {
-        var file = new File("src/test/resources/bean");
+        var file = new File("src/test/resources/bean.bin");
 
         var basePackageFilter = ObjectInputFilter.Config.createFilter("java.base/*;!*");
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {

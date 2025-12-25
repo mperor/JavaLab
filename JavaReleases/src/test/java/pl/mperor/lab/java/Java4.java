@@ -37,6 +37,7 @@ public class Java4 {
         Path path = Path.of("src", "test", "resources", "nio.txt");
         byte[] fileBytes = Files.readAllBytes(path);
         String content = new String(fileBytes);
+
         Assertions.assertEquals("Hello NIO!", content);
     }
 

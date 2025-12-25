@@ -124,7 +124,7 @@ public class Java5 {
             latch.countDown();
         }, 0, 100, TimeUnit.MILLISECONDS);
 
-        boolean completed = latch.await(300, TimeUnit.MILLISECONDS);
+        boolean completed = latch.await(200, TimeUnit.MILLISECONDS);
         Assertions.assertTrue(completed, "Task did not execute twice in time");
         Assertions.assertEquals(2, counter.get());
 
