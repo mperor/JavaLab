@@ -2,9 +2,11 @@ package pl.mperor.lab.java;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import pl.mperor.lab.common.TestUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.beans.EventHandler;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -12,6 +14,9 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -37,8 +42,12 @@ public class Java4 {
         Path path = Path.of("src", "test", "resources", "nio.txt");
         byte[] fileBytes = Files.readAllBytes(path);
         String content = new String(fileBytes);
-
         Assertions.assertEquals("Hello NIO!", content);
+
+        var fileCreationTime = Files.readAttributes(path, BasicFileAttributes.class)
+                .creationTime();
+        System.out.printf("📃 File '%s' - last access time: ⌚%s%n: ", path.getFileName(), fileCreationTime);
+        Assertions.assertTrue(fileCreationTime.compareTo(FileTime.from(Instant.now())) <= 0);
     }
 
     @Test
@@ -123,6 +132,19 @@ public class Java4 {
             Assertions.assertEquals("Hello Server!", reader.readLine());
             out.println("Hello Client!");
         }
+    }
+
+    @Test
+    public void testJavaBeansEventHandler() {
+        var out = TestUtils.setTempSystemOut();
+        Runnable runnable = EventHandler.create(Runnable.class, this, "run"); // () -> run();
+        runnable.run();
+        Assertions.assertEquals("Run was called!", out.all());
+        TestUtils.resetSystemOut();
+    }
+
+    public void run() {
+        System.out.print("Run was called!");
     }
 
 }

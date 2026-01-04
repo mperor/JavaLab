@@ -8,6 +8,7 @@ import pl.mperor.lab.java.generic.Box;
 import java.lang.annotation.*;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -144,6 +145,16 @@ public class Java5 {
         StringBuilder sb = new StringBuilder();
         sb.append("dlroW ").append("olleH");
         Assertions.assertEquals("Hello World", sb.reverse().toString());
+    }
+
+    @Test
+    public void testCollectionsAPI() {
+        var collection = List.of(1,2,3,2,2);
+        Assertions.assertEquals(3, Collections.frequency(collection, 2));
+
+        List<String> empty = Collections.emptyList();
+        Assertions.assertNotNull(empty);
+        Assertions.assertTrue(empty.isEmpty());
     }
 
 }
