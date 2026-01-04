@@ -62,7 +62,7 @@ public class Java12 {
 
         StringBuilder sb = new StringBuilder();
         for (byte b : hashBytes) {
-            sb.append(String.format("%02x", b));
+            sb.append(String.format("%02x", b)); // byte to 2‑digit hex
         }
         return sb.toString();
     }

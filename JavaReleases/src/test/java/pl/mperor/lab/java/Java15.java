@@ -62,7 +62,15 @@ public class Java15 {
 
     @Test
     public void testStringFormatted() {
-        Assertions.assertEquals("Hello World!", "Hello %s".formatted("World!"));
+        var positionInFormatted = """
+                user: %1$s
+                last name: %2$s
+                name: %1$s""".formatted("John", "Smith");
+        Assertions.assertEquals("""
+                user: John
+                last name: Smith
+                name: John""", positionInFormatted);
+
         Assertions.assertEquals("Value: 0.00", String.format(Locale.US, "Value: %.2f", 0d));
     }
 
