@@ -157,4 +157,17 @@ public class Java5 {
         Assertions.assertTrue(empty.isEmpty());
     }
 
+    @Test
+    public void testSupplementaryCharacters() {
+        // JSR 204: characters beyond BMP (code point > U+FFFF) are stored as a surrogate pair of two chars
+        String emoji = "😀"; // U+1F600 Grinning face
+
+        Assertions.assertEquals(2, emoji.length());
+        Assertions.assertEquals(1, emoji.codePointCount(0, emoji.length()));
+        Assertions.assertEquals(0x1F600, emoji.codePointAt(0));
+        Assertions.assertTrue(Character.isHighSurrogate(emoji.charAt(0)));
+        Assertions.assertTrue(Character.isLowSurrogate(emoji.charAt(1)));
+        Assertions.assertEquals("\uD83D\uDE00", new String(Character.toChars(0x1F600)));
+    }
+
 }

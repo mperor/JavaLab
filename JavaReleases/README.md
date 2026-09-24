@@ -4,6 +4,7 @@
 
 This project includes unit tests for key functionalities introduced in each Java version.
 
+- [Java 1.0 (Java 0)](src/test/java/pl/mperor/lab/java/Java0.java)
 - [Java 1.1 (Java 1™)](src/test/java/pl/mperor/lab/java/Java1.java)
 - [Java 1.2 (Java 2™)](src/test/java/pl/mperor/lab/java/Java2.java)
 - [Java 1.3 (Java 3™)](src/test/java/pl/mperor/lab/java/Java3.java)
