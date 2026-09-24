@@ -3,9 +3,13 @@ package pl.mperor.lab.java;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Gatherer;
 import java.util.stream.Gatherers;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /// Java 24 (March 2025)
 /// [JDK 24](https://openjdk.org/projects/jdk/24)
@@ -50,5 +54,26 @@ public class Java24 {
                         List.of(1, 2),
                         List.of(3)
                 ), result);
+    }
+
+    @Test
+    public void testCreateGatherer() {
+        var result = Stream.of("one", "two", "three", "four", "five")
+                .gather(distinctBy(String::length))
+                .toList();
+
+        Assertions.assertEquals(List.of("one", "three", "four"), result);
+    }
+
+    /// Keeps only the first element for each key produced by `extractor`.
+    private static <T, P> Gatherer<T, ?, T> distinctBy(Function<? super T, ? extends P> extractor) {
+        return Gatherer.ofSequential(HashSet<P>::new, Gatherer.Integrator.ofGreedy(
+                (seen, element, downstream) -> {
+                    if (seen.add(extractor.apply(element))) {
+                        return downstream.push(element);
+                    }
+                    return true;
+                }
+        ));
     }
 }
