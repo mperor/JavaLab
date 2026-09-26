@@ -27,33 +27,35 @@ import static pl.mperor.lab.java.lang.OuterClass.StaticNestedClass;
 
 /**
  * Java 1.1 (February 1997)
- *
+ * <p>
  * - LANGUAGE FEATURES:
- *     - Inner classes (member, local & anonymous)
- *     - Instance initializer blocks
- *     - Class literals (`String.class`)
- *     - Blank finals
- *
+ * - Inner classes (member, local & anonymous)
+ * - Instance initializer blocks
+ * - Class literals (`String.class`)
+ * - Blank finals
+ * <p>
  * - LIBRARIES & APIs:
- *     - JavaBeans
- *     - JDBC (Java Database Connectivity)
- *     - RMI (Remote Method Invocation)
- *     - Reflection API
- *     - Object Serialization
- *     - Character Streams (`Reader` / `Writer`) & Unicode 2.0
- *     - Internationalization (`java.text`, `Locale`, `ResourceBundle`)
- *     - Arbitrary-Precision Arithmetic (`java.math`)
- *     - AWT Event Delegation Model
- *     - JNI (Java Native Interface)
- *
+ * - JavaBeans
+ * - JDBC (Java Database Connectivity)
+ * - RMI (Remote Method Invocation)
+ * - Reflection API
+ * - Object Serialization
+ * - Character Streams (`Reader` / `Writer`) & Unicode 2.0
+ * - Internationalization (`java.text`, `Locale`, `ResourceBundle`)
+ * - Arbitrary-Precision Arithmetic (`java.math`)
+ * - AWT Event Delegation Model
+ * - JNI (Java Native Interface)
+ * <p>
  * - TOOLS:
- *     - JAR files (`jar`)
- *     - Signed JARs (`javakey`)
+ * - JAR files (`jar`)
+ * - Signed JARs (`javakey`)
  */
 public class Java1 {
 
     @Test
     public void testInnerAndNestedStaticClasses() {
+        // Java 1.1 added nested classes - a static nested class needs no outer instance,
+        // while an inner class is bound to one and can access its members via OuterClass.this
         StaticNestedClass nested = new StaticNestedClass();
         Assertions.assertNotNull(nested);
 
@@ -151,7 +153,7 @@ public class Java1 {
     @Test
     public void testJavaDatabaseConnectivityAkaJDBC() throws SQLException, ClassNotFoundException {
         String createTableUsersSqlCommand = "CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name TEXT)";
-        String insertUserSqlCommand = "INSERT INTO users (name) VALUES ('Mark Pi')";
+        String insertUserSqlCommand = "INSERT INTO users (name) VALUES ('John Doe')";
         String queryAllUsersSqlCommand = "SELECT * FROM users";
 
         // Load the H2 JDBC driver: its static initializer registers it in DriverManager.
@@ -167,7 +169,7 @@ public class Java1 {
             try (ResultSet resultSet = statement.executeQuery(queryAllUsersSqlCommand)) {
                 Assertions.assertTrue(resultSet.next());
                 Assertions.assertEquals(1, resultSet.getInt("id"));
-                Assertions.assertEquals("Mark Pi", resultSet.getString("name"));
+                Assertions.assertEquals("John Doe", resultSet.getString("name"));
             }
         }
     }

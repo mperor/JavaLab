@@ -99,6 +99,8 @@ public class Java0 {
         Assertions.assertNull(properties.get("timeout")); // Hashtable.get ignores defaults
 
         // Properties extends Hashtable<Object, Object> - a design flaw, as non-String values can be put but not read back
+        // Since Java 9 the inherited Hashtable storage is unused - entries live in an internal ConcurrentHashMap (lock-free reads)
+        Assertions.assertInstanceOf(Hashtable.class, properties);
         properties.put("port", 8080);
         Assertions.assertNull(properties.getProperty("port"));
     }
