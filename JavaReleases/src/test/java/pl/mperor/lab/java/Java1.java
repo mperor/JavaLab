@@ -13,6 +13,8 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -190,6 +192,26 @@ public class Java1 {
             Assertions.assertEquals(text.length(), reader.read(buffer));
             Assertions.assertEquals(text, new String(buffer));
         }
+    }
+
+    @Test
+    public void testArbitraryPrecisionArithmetic() {
+        // Java 1.1 added java.math - double cannot represent most decimal fractions exactly, BigDecimal can
+        Assertions.assertNotEquals(0.3, 0.1 + 0.2);
+        Assertions.assertEquals(new BigDecimal("0.3"), new BigDecimal("0.1").add(new BigDecimal("0.2")));
+
+        // BigDecimal(double) keeps the binary approximation of the double - prefer the String constructor
+        Assertions.assertNotEquals(new BigDecimal("0.1"), new BigDecimal(0.1));
+        Assertions.assertEquals(new BigDecimal("0.1"), BigDecimal.valueOf(0.1)); // valueOf (Java 5) goes through Double.toString
+
+        // equals compares value & scale, while compareTo compares only the numerical value
+        Assertions.assertNotEquals(new BigDecimal("2.0"), new BigDecimal("2.00"));
+        Assertions.assertEquals(0, new BigDecimal("2.0").compareTo(new BigDecimal("2.00")));
+
+        // long silently overflows, while BigInteger has no fixed upper bound
+        Assertions.assertEquals(Long.MIN_VALUE, Long.MAX_VALUE + 1);
+        BigInteger beyondLong = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE);
+        Assertions.assertEquals(new BigInteger("9223372036854775808"), beyondLong);
     }
 
 }
