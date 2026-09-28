@@ -22,6 +22,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,6 +68,70 @@ public class Java1 {
         Assertions.assertEquals("outer secret", outer.getSecret());
         Assertions.assertEquals(outer.getSecret(), inner.getOuterClassSecret());
         Assertions.assertEquals("inner secret", inner.getSecret());
+    }
+
+    @Test
+    public void testLocalAndAnonymousClasses() {
+        // Local & anonymous classes can capture local variables - they had to be final in Java 1.1, effectively final since Java 8
+        String greeting = "Hello";
+
+        class LocalGreeter {
+            String greet(String name) {
+                return greeting + " " + name;
+            }
+        }
+
+        Object anonymous = new Object() {
+            @Override
+            public String toString() {
+                return greeting + " from anonymous";
+            }
+        };
+
+        Assertions.assertEquals("Hello John", new LocalGreeter().greet("John"));
+        Assertions.assertEquals("Hello from anonymous", anonymous.toString());
+        Assertions.assertTrue(LocalGreeter.class.isLocalClass());
+        Assertions.assertTrue(anonymous.getClass().isAnonymousClass());
+    }
+
+    @Test
+    public void testInstanceInitializerAndBlankFinal() {
+        // Instance initializer blocks run after field initializers (in textual order) and before the constructor body
+        var initialization = new Initialization(42);
+        Assertions.assertEquals(List.of("field", "initializer", "constructor"), initialization.steps);
+
+        // A blank final is declared without a value and must be assigned exactly once in every constructor
+        Assertions.assertEquals(42, initialization.id);
+    }
+
+    static class Initialization {
+
+        final List<String> steps = new ArrayList<>(List.of("field"));
+        final int id; // blank final
+
+        {
+            steps.add("initializer");
+        }
+
+        Initialization(int id) {
+            this.id = id;
+            steps.add("constructor");
+        }
+
+    }
+
+    @Test
+    public void testClassLiterals() {
+        // Class literals give the Class object at compile time - no instance or Class.forName lookup needed
+        Assertions.assertSame(String.class, "text".getClass());
+        Assertions.assertEquals("java.lang.String", String.class.getName());
+
+        // Primitives, arrays & void have their own Class objects, distinct from the wrapper classes
+        Assertions.assertTrue(int.class.isPrimitive());
+        Assertions.assertSame(int.class, Integer.TYPE);
+        Assertions.assertNotSame(int.class, Integer.class);
+        Assertions.assertSame(void.class, Void.TYPE);
+        Assertions.assertEquals("[I", int[].class.getName());
     }
 
     @Test
