@@ -22,9 +22,19 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
+import java.text.Collator;
+import java.text.MessageFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.ListResourceBundle;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import static pl.mperor.lab.java.lang.OuterClass.StaticNestedClass;
 
@@ -256,6 +266,61 @@ public class Java1 {
             var buffer = new char[text.length()];
             Assertions.assertEquals(text.length(), reader.read(buffer));
             Assertions.assertEquals(text, new String(buffer));
+        }
+    }
+
+    @Test
+    public void testInternationalizationFormatting() {
+        // Java 1.1 added java.text - numbers, dates & messages are formatted according to a Locale
+        Locale poland = Locale.of("pl", "PL");
+        Assertions.assertEquals("1,234.5", NumberFormat.getInstance(Locale.US).format(1234.5));
+        Assertions.assertEquals("1.234,5", NumberFormat.getInstance(Locale.GERMANY).format(1234.5));
+        Assertions.assertEquals("$1,234.50", NumberFormat.getCurrencyInstance(Locale.US).format(1234.5));
+
+        // Month & day names are localized - Polish uses the genitive month form inside a full date
+        var newYear = new GregorianCalendar(2024, Calendar.JANUARY, 1).getTime();
+        Assertions.assertEquals("Monday, January 1, 2024", new SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.US).format(newYear));
+        Assertions.assertEquals("poniedziałek, 1 stycznia 2024", new SimpleDateFormat("EEEE, d MMMM yyyy", poland).format(newYear));
+
+        // MessageFormat fills placeholders, ChoiceFormat picks the text variant based on a number
+        var messageFormat = new MessageFormat("{0} has {1,choice,0#no messages|1#one message|1<{1,number,integer} messages}", Locale.US);
+        Assertions.assertEquals("John Doe has no messages", messageFormat.format(new Object[]{"John Doe", 0}));
+        Assertions.assertEquals("John Doe has one message", messageFormat.format(new Object[]{"John Doe", 1}));
+        Assertions.assertEquals("John Doe has 1,000 messages", messageFormat.format(new Object[]{"John Doe", 1000}));
+
+        // String.compareTo compares UTF-16 code units, Collator applies the language's alphabetical order
+        List<String> words = new ArrayList<>(List.of("zebra", "ćma", "cebula", "ananas"));
+        words.sort(null);
+        Assertions.assertEquals(List.of("ananas", "cebula", "zebra", "ćma"), words);
+        words.sort(Collator.getInstance(poland));
+        Assertions.assertEquals(List.of("ananas", "cebula", "ćma", "zebra"), words);
+    }
+
+    @Test
+    public void testResourceBundle() {
+        // ResourceBundle picks the most specific bundle for a Locale (Messages_pl) and falls back to its parent (Messages)
+        String baseName = Messages.class.getName();
+        ResourceBundle polish = ResourceBundle.getBundle(baseName, Locale.of("pl"));
+        ResourceBundle root = ResourceBundle.getBundle(baseName, Locale.ROOT);
+
+        Assertions.assertEquals("Cześć", polish.getString("greeting"));
+        Assertions.assertEquals("Hello", root.getString("greeting"));
+        Assertions.assertEquals("JavaLab", polish.getString("app.name")); // missing in Messages_pl - taken from the parent
+        Assertions.assertThrows(MissingResourceException.class, () -> root.getString("missing"));
+    }
+
+    // Bundles can be classes (ListResourceBundle) or .properties files (PropertyResourceBundle)
+    public static class Messages extends ListResourceBundle {
+        @Override
+        protected Object[][] getContents() {
+            return new Object[][]{{"greeting", "Hello"}, {"app.name", "JavaLab"}};
+        }
+    }
+
+    public static class Messages_pl extends ListResourceBundle {
+        @Override
+        protected Object[][] getContents() {
+            return new Object[][]{{"greeting", "Cześć"}};
         }
     }
 
