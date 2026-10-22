@@ -1,0 +1,9 @@
+# Normalize text files to LF in the repository
+* text=auto
+
+# Scripts that must keep platform-specific line endings
+gradlew text eol=lf
+*.bat text eol=crlf
+
+# Test fixtures (encodings, binary samples) must stay byte-for-byte intact
+JavaReleases/src/test/resources/** -text

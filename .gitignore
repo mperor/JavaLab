@@ -37,4 +37,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
-/HelloWorld.class
+
+### Leftovers of Java6#testJavaDynamicCompilation when it fails before cleanup ###
+/JavaReleases/HelloWorld.java
+/JavaReleases/HelloWorld.class
