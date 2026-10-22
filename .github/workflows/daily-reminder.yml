@@ -2,8 +2,9 @@ name: Daily review reminder
 
 on:
   schedule:
-    # 16:00 UTC = 17:00 Europe/Warsaw in winter (18:00 in summer)
-    - cron: '0 16 * * *'
+    # Times in UTC; Europe/Warsaw is UTC+1 in winter (+2 in summer)
+    - cron: '30 6 * * *' # 07:30 - announce the new daily PR
+    - cron: '0 16 * * *' # 17:00 - remind if it is still open
   workflow_dispatch:
 
 permissions:
@@ -17,12 +18,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          MORNING: ${{ github.event.schedule == '30 6 * * *' }}
         run: |
           prs=$(gh pr list --label daily --state open --json number --jq '.[].number')
           if [ -z "$prs" ]; then
             echo "No open daily PRs - nothing to remind about."
             exit 0
           fi
+          if [ "$MORNING" = "true" ]; then
+            message="📚 Today's daily topic is ready for review."
+          else
+            message="⏰ This daily topic is still waiting for your review."
+          fi
           for pr in $prs; do
-            gh pr comment "$pr" --body "@${{ github.repository_owner }} ⏰ This daily topic is still waiting for your review."
+            gh pr comment "$pr" --body "@$OWNER $message"
           done
