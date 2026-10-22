@@ -29,7 +29,7 @@ public final class Folder extends AddressablePath {
         Arrays.stream(paths)
                 .filter(Folder.class::isInstance)
                 .map(Folder.class::cast)
-                .map(complexTag -> complexTag.find(nameMatcher))
+                .map(folder -> folder.find(nameMatcher))
                 .flatMap(Collection::stream)
                 .forEach(result::add);
 

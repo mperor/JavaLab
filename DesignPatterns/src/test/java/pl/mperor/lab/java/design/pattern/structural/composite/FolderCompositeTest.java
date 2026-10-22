@@ -1,5 +1,6 @@
 package pl.mperor.lab.java.design.pattern.structural.composite;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,8 +16,12 @@ class FolderCompositeTest {
                 new Folder("images", new File("logo.png")),
                 new File("index.html")
         );
-        List<String> paths = root.find(name -> name.contains("css"));
-        System.out.println(paths);
+
+        Assertions.assertEquals(List.of("root/css", "root/css/main.css", "root/css/user.css"),
+                root.find(name -> name.contains("css")));
+        Assertions.assertEquals(List.of("root/js/main.js", "root/js/user.js"),
+                root.find(name -> name.endsWith(".js")));
+        Assertions.assertEquals(List.of(), root.find(name -> name.endsWith(".exe")));
     }
 
 }
