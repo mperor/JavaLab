@@ -51,6 +51,7 @@ jobs:
           JavaReleases/build/test-results/test/*.xml
           DesignPatterns/build/test-results/test/*.xml
           CleanCode/build/test-results/test/*.xml
+          Common/build/test-results/test/*.xml
 
     - name: Set badge color
       shell: bash
