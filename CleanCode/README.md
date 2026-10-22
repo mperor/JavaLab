@@ -14,4 +14,15 @@
 
 This project contains practical examples and best practices inspired by the principles of **Clean Code**.
 
-[Check it out 🔍](src/main/java/pl/mperor/lab/java/Dummy.java)
+## Contents 📚
+
+### Domain-Driven Design (DDD) 🏛️
+
+- [Value Object](src/test/java/pl/mperor/lab/java/clean/code/ddd/value/object/ValueObjectTest.java)
+- [Command vs Event](src/test/java/pl/mperor/lab/java/clean/code/ddd/CommandVsEventTest.java)
+
+### GRASP 🤲
+
+- [Information Expert](src/test/java/pl/mperor/lab/java/clean/code/grasp/InformationExpertTest.java)
+
+[Check it out 🔍](src/test/java/pl/mperor/lab/java/clean/code)
