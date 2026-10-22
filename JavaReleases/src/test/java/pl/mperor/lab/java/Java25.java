@@ -44,12 +44,6 @@ public class Java25 {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new PositiveBox(-1));
     }
 
-    @Test
-    public void testFieldAssignedBeforeSuperVisibleToOverriddenMethod() {
-        var circle = new Circle(2.5);
-        Assertions.assertEquals("circle r=2.5", circle.description);
-    }
-
     static class Box {
         final int value;
 
@@ -67,6 +61,12 @@ public class Java25 {
             }
             super(value);
         }
+    }
+
+    @Test
+    public void testFieldAssignedBeforeSuperVisibleToOverriddenMethod() {
+        var circle = new Circle(2.5);
+        Assertions.assertEquals("circle r=2.5", circle.description);
     }
 
     static class Shape {
