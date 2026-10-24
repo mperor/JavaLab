@@ -39,4 +39,8 @@
 - [Packages](src/test/java/pl/mperor/lab/java/lang/element/PackageTest.java)
 - [Optional](src/test/java/pl/mperor/lab/java/lang/element/OptionalTest.java)
 
+### Quirks 🤔
+
+- [Integer Cache](src/test/java/pl/mperor/lab/java/quirk/IntegerCacheTest.java)
+
 [Check it out 🔍](src/test/java/pl/mperor/lab/java)
