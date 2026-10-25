@@ -39,6 +39,10 @@
 - [Packages](src/test/java/pl/mperor/lab/java/lang/element/PackageTest.java)
 - [Optional](src/test/java/pl/mperor/lab/java/lang/element/OptionalTest.java)
 
+### Idioms 💡
+
+- [Data-Oriented Programming](src/test/java/pl/mperor/lab/java/idiom/DataOrientedProgrammingTest.java)
+
 ### Quirks 🤔
 
 - [Integer Cache](src/test/java/pl/mperor/lab/java/quirk/IntegerCacheTest.java)
