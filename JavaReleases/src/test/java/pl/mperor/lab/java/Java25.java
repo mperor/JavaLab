@@ -148,4 +148,20 @@ public class Java25 {
         Assertions.assertFalse(USER.isBound());
     }
 
+    @Test
+    public void testModuleImportBringsInAllExportedPackagesOfJavaBase() {
+        var demo = new JavaBaseImport();
+        // List.of(...) (java.util) and new File(...) (java.io) are two different java.base packages,
+        // both resolved inside JavaBaseImport.java by its single `import module java.base;` declaration
+        Assertions.assertEquals(java.util.List.of("a", "b", "c"), demo.listFromUtilPackage);
+        Assertions.assertEquals("file.txt", demo.fileFromIoPackage.getName());
+    }
+
+    @Test
+    public void testModuleImportAmbiguityResolvedBySingleTypeImport() {
+        var demo = new JavaDesktopImportAmbiguity();
+        // proof that `names` really is java.util.List, not java.awt.List, see JavaDesktopImportAmbiguity.java
+        Assertions.assertEquals(java.util.List.of("John Doe", "Jane Doe"), demo.names);
+    }
+
 }
