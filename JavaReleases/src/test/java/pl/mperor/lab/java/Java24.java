@@ -57,6 +57,74 @@ public class Java24 {
     }
 
     @Test
+    public void testWindowSlidingVsWindowFixed() {
+        var fixed = IntStream.rangeClosed(1, 5)
+                .boxed()
+                .gather(Gatherers.windowFixed(2))
+                .toList();
+
+        var sliding = IntStream.rangeClosed(1, 5)
+                .boxed()
+                .gather(Gatherers.windowSliding(2))
+                .toList();
+
+        // windowFixed partitions the stream: windows never overlap and the last one may be shorter.
+        Assertions.assertEquals(List.of(List.of(1, 2), List.of(3, 4), List.of(5)), fixed);
+        // windowSliding moves one element at a time: every full-size window is kept, so windows overlap.
+        Assertions.assertEquals(
+                List.of(List.of(1, 2), List.of(2, 3), List.of(3, 4), List.of(4, 5)), sliding);
+    }
+
+    @Test
+    public void testFoldVsReduce() {
+        var fold = Stream.of(1, 2, 3, 4)
+                .gather(Gatherers.fold(() -> "", (acc, n) -> acc + n))
+                .findFirst()
+                .orElseThrow();
+
+        // the 3-arg reduce computes the same left-to-right accumulation, but still needs a
+        // combiner because reduce is defined to also support parallel streams.
+        var reduce = Stream.of(1, 2, 3, 4).reduce("", (acc, n) -> acc + n, String::concat);
+
+        Assertions.assertEquals("1234", fold);
+        Assertions.assertEquals(reduce, fold);
+    }
+
+    @Test
+    public void testScanRunningTotals() {
+        // unlike fold, which emits only the final accumulated value, scan emits every
+        // intermediate result as it is produced.
+        var runningTotals = Stream.of(1, 2, 3, 4)
+                .gather(Gatherers.scan(() -> 0, Integer::sum))
+                .toList();
+
+        Assertions.assertEquals(List.of(1, 3, 6, 10), runningTotals);
+    }
+
+    @Test
+    public void testMapConcurrentPreservesEncounterOrder() {
+        // mapConcurrent runs the mapper for each element on its own virtual thread, but still
+        // buffers the results so the output keeps the input's encounter order.
+        var delaysMillis = List.of(300, 100, 200, 50);
+
+        var result = delaysMillis.stream()
+                .gather(Gatherers.mapConcurrent(delaysMillis.size(), Java24::sleepAndReturn))
+                .toList();
+
+        Assertions.assertEquals(delaysMillis, result);
+    }
+
+    private static int sleepAndReturn(int delayMillis) {
+        try {
+            Thread.sleep(delayMillis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
+        return delayMillis;
+    }
+
+    @Test
     public void testCreateGatherer() {
         var result = Stream.of("one", "two", "three", "four", "five")
                 .gather(distinctBy(String::length))
