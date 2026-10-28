@@ -46,5 +46,6 @@
 ### Quirks 🤔
 
 - [Integer Cache](src/test/java/pl/mperor/lab/java/quirk/IntegerCacheTest.java)
+- [BigDecimal equals vs compareTo](src/test/java/pl/mperor/lab/java/quirk/BigDecimalEqualsVsCompareToTest.java)
 
 [Check it out 🔍](src/test/java/pl/mperor/lab/java)
