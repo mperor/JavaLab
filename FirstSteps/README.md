@@ -42,6 +42,7 @@
 ### Idioms 💡
 
 - [Data-Oriented Programming](src/test/java/pl/mperor/lab/java/idiom/DataOrientedProgrammingTest.java)
+- [Records in Depth](src/test/java/pl/mperor/lab/java/idiom/RecordsInDepthTest.java)
 
 ### Quirks 🤔
 
