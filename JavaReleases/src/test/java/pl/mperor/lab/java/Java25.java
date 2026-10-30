@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pl.mperor.lab.common.TestUtils;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
 /// Java 25 (September 2025)
@@ -162,6 +164,27 @@ public class Java25 {
         var demo = new JavaDesktopImportAmbiguity();
         // proof that `names` really is java.util.List, not java.awt.List, see JavaDesktopImportAmbiguity.java
         Assertions.assertEquals(java.util.List.of("John Doe", "Jane Doe"), demo.names);
+    }
+
+    /// CompactSourceFile.java has no package declaration, so it lives in the unnamed package and
+    /// cannot be imported here (a named package can never import from the unnamed one). It is
+    /// launched the way JEP 512 intends: directly by the `java` source launcher, one file, no build step.
+    @Test
+    public void testCompactSourceFileRunsDirectlyViaSourceLauncher() throws IOException, InterruptedException {
+        var javaLauncher = Path.of(System.getProperty("java.home"), "bin", "java");
+        var sourceFile = Path.of("src", "main", "java", "pl", "mperor", "lab", "java", "CompactSourceFile.java");
+
+        var process = new ProcessBuilder(javaLauncher.toString(), sourceFile.toString())
+                .redirectErrorStream(true)
+                .start();
+        String output = new String(process.getInputStream().readAllBytes());
+        int exitCode = process.waitFor();
+
+        Assertions.assertEquals(0, exitCode, output);
+        Assertions.assertEquals(
+                "Compact source file & main method here ..." + System.lineSeparator()
+                        + "Items: [a, b, c]" + System.lineSeparator(),
+                output);
     }
 
 }
