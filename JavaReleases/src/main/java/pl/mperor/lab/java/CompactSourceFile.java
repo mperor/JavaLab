@@ -4,5 +4,6 @@
 /// Has, as its members, the fields and methods in the compact source file; and
 /// Must have a launchable main method; if it does not, a compile-time error is reported.
 void main() {
-    IO.println("Compact source file & main method here ...");
+    IO.println("Compact source file & main method here ..."); // IO (java.io) needs no import
+    IO.println("Items: " + List.of("a", "b", "c")); // List (java.util) needs no import either
 }
