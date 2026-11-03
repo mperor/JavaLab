@@ -47,5 +47,6 @@
 ### Quirks 🤔
 
 - [Integer Cache](src/test/java/pl/mperor/lab/java/quirk/IntegerCacheTest.java)
+- [Finally Overriding Return](src/test/java/pl/mperor/lab/java/quirk/FinallyOverridingReturnTest.java)
 
 [Check it out 🔍](src/test/java/pl/mperor/lab/java)
