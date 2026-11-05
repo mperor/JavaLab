@@ -2,9 +2,14 @@ package pl.mperor.lab.java;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import pl.mperor.lab.common.TestUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Gatherer;
 import java.util.stream.Gatherers;
@@ -143,5 +148,104 @@ public class Java24 {
                     return true;
                 }
         ));
+    }
+
+    @Test
+    public void testManyVirtualThreadsBlockingInsideSynchronizedDoNotPinCarriers() {
+        int threadCount = 1000;
+        int sleepMillis = 80;
+        int carriers = Runtime.getRuntime().availableProcessors();
+
+        long elapsedMillis = TestUtils.measureExecutionTimeMillis(() -> {
+            try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+                for (int i = 0; i < threadCount; i++) {
+                    executor.submit(() -> {
+                        // each thread uses its own monitor: this is about pinning while
+                        // blocked, not about lock contention.
+                        synchronized (new Object()) {
+                            Thread.sleep(sleepMillis);
+                        }
+                        return null;
+                    });
+                }
+            }
+        });
+
+        // before JEP 491, blocking inside `synchronized` pinned a virtual thread to its carrier,
+        // so `threadCount` of them could run only `carriers` at a time: roughly
+        // threadCount / carriers * sleepMillis in total. Since JDK 24 the carrier is released
+        // instead, so they all run close to concurrently, in roughly one sleepMillis.
+        long pinnedEstimateMillis = (long) Math.ceil((double) threadCount / carriers) * sleepMillis;
+        Assertions.assertTrue(elapsedMillis < pinnedEstimateMillis / 3,
+                "expected %dms to stay well under the pinned estimate of %dms".formatted(elapsedMillis, pinnedEstimateMillis));
+    }
+
+    // JEP 491 has one remaining pinning case: a virtual thread that blocks inside `synchronized`
+    // while also on a native (JNI) frame still pins its carrier, because the JVM cannot unmount
+    // a thread across native stack frames. That case needs a JNI call to trigger, so it has no
+    // simple JUnit-level test here.
+
+    @Test
+    public void testSynchronizedBlockedThreadIgnoresInterrupt() throws InterruptedException {
+        Object monitor = new Object();
+        var holderEntered = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+        Thread holder = Thread.ofVirtual().start(() -> {
+            synchronized (monitor) {
+                holderEntered.countDown();
+                try {
+                    release.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+        holderEntered.await();
+
+        var acquired = new AtomicBoolean(false);
+        Thread waiter = Thread.ofVirtual().start(() -> {
+            synchronized (monitor) {
+                acquired.set(true);
+            }
+        });
+        Thread.sleep(100); // give the waiter time to actually block entering the monitor
+        waiter.interrupt();
+        Thread.sleep(100);
+
+        // interrupting a thread that is blocked entering a `synchronized` block has no effect:
+        // it keeps waiting instead of throwing InterruptedException.
+        Assertions.assertFalse(acquired.get());
+        Assertions.assertEquals(Thread.State.BLOCKED, waiter.getState());
+
+        release.countDown();
+        waiter.join();
+        holder.join();
+        Assertions.assertTrue(acquired.get());
+    }
+
+    @Test
+    public void testReentrantLockIsInterruptibleUnlikeSynchronized() throws InterruptedException {
+        var lock = new ReentrantLock();
+        lock.lock();
+
+        var interrupted = new AtomicBoolean(false);
+        Thread waiter = Thread.ofVirtual().start(() -> {
+            try {
+                lock.lockInterruptibly();
+                lock.unlock();
+            } catch (InterruptedException e) {
+                interrupted.set(true);
+            }
+        });
+        Thread.sleep(100);
+        waiter.interrupt();
+        waiter.join();
+
+        // unlike synchronized (see above), ReentrantLock#lockInterruptibly gives the waiting
+        // thread a way out: it throws as soon as it is interrupted, instead of waiting for the
+        // lock forever. That, plus tryLock, fairness and multiple Conditions, is still a reason
+        // to reach for it over synchronized.
+        Assertions.assertTrue(interrupted.get());
+        lock.unlock();
     }
 }
