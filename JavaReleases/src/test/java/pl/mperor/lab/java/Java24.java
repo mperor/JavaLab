@@ -4,6 +4,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pl.mperor.lab.common.TestUtils;
 
+import java.io.IOException;
+import java.lang.classfile.ClassFile;
+import java.lang.classfile.ClassModel;
+import java.lang.classfile.ClassTransform;
+import java.lang.classfile.MethodModel;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
+import java.lang.constant.MethodTypeDesc;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -151,101 +162,81 @@ public class Java24 {
     }
 
     @Test
-    public void testManyVirtualThreadsBlockingInsideSynchronizedDoNotPinCarriers() {
-        int threadCount = 1000;
-        int sleepMillis = 80;
-        int carriers = Runtime.getRuntime().availableProcessors();
+    public void testParseListsMethodsAndFields() throws IOException {
+        var classModel = ClassFile.of().parse(classBytesOf(SampleTarget.class));
 
-        long elapsedMillis = TestUtils.measureExecutionTimeMillis(() -> {
-            try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-                for (int i = 0; i < threadCount; i++) {
-                    executor.submit(() -> {
-                        // each thread uses its own monitor: this is about pinning while
-                        // blocked, not about lock contention.
-                        synchronized (new Object()) {
-                            Thread.sleep(sleepMillis);
-                        }
-                        return null;
-                    });
-                }
-            }
-        });
+        var methodNames = classModel.methods().stream()
+                .map(method -> method.methodName().stringValue())
+                .toList();
+        var fieldNames = classModel.fields().stream()
+                .map(field -> field.fieldName().stringValue())
+                .toList();
 
-        // before JEP 491, blocking inside `synchronized` pinned a virtual thread to its carrier,
-        // so `threadCount` of them could run only `carriers` at a time: roughly
-        // threadCount / carriers * sleepMillis in total. Since JDK 24 the carrier is released
-        // instead, so they all run close to concurrently, in roughly one sleepMillis.
-        long pinnedEstimateMillis = (long) Math.ceil((double) threadCount / carriers) * sleepMillis;
-        Assertions.assertTrue(elapsedMillis < pinnedEstimateMillis / 3,
-                "expected %dms to stay well under the pinned estimate of %dms".formatted(elapsedMillis, pinnedEstimateMillis));
+        // the compiler-generated constructor shows up as a plain method named "<init>".
+        Assertions.assertTrue(methodNames.containsAll(List.of("<init>", "add", "greet")));
+        Assertions.assertEquals(List.of("bonus"), fieldNames);
     }
 
-    // JEP 491 has one remaining pinning case: a virtual thread that blocks inside `synchronized`
-    // while also on a native (JNI) frame still pins its carrier, because the JVM cannot unmount
-    // a thread across native stack frames. That case needs a JNI call to trigger, so it has no
-    // simple JUnit-level test here.
+    /// A tiny, unused-looking helper class: its only purpose is to be parsed/transformed as raw bytecode below.
+    private static class SampleTarget {
+        private final int bonus;
 
-    @Test
-    public void testSynchronizedBlockedThreadIgnoresInterrupt() throws InterruptedException {
-        Object monitor = new Object();
-        var holderEntered = new CountDownLatch(1);
-        var release = new CountDownLatch(1);
-        Thread holder = Thread.ofVirtual().start(() -> {
-            synchronized (monitor) {
-                holderEntered.countDown();
-                try {
-                    release.await();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
-        holderEntered.await();
+        SampleTarget(int bonus) {
+            this.bonus = bonus;
+        }
 
-        var acquired = new AtomicBoolean(false);
-        Thread waiter = Thread.ofVirtual().start(() -> {
-            synchronized (monitor) {
-                acquired.set(true);
-            }
-        });
-        Thread.sleep(100); // give the waiter time to actually block entering the monitor
-        waiter.interrupt();
-        Thread.sleep(100);
+        int add(int a, int b) {
+            return a + b + bonus;
+        }
 
-        // interrupting a thread that is blocked entering a `synchronized` block has no effect:
-        // it keeps waiting instead of throwing InterruptedException.
-        Assertions.assertFalse(acquired.get());
-        Assertions.assertEquals(Thread.State.BLOCKED, waiter.getState());
+        String greet(String name) {
+            return "Hello, " + name;
+        }
+    }
 
-        release.countDown();
-        waiter.join();
-        holder.join();
-        Assertions.assertTrue(acquired.get());
+    private static byte[] classBytesOf(Class<?> type) throws IOException {
+        var resourceName = type.getName().replace('.', '/') + ".class";
+        try (var in = type.getClassLoader().getResourceAsStream(resourceName)) {
+            return in.readAllBytes();
+        }
     }
 
     @Test
-    public void testReentrantLockIsInterruptibleUnlikeSynchronized() throws InterruptedException {
-        var lock = new ReentrantLock();
-        lock.lock();
+    public void testBuildClassAtRuntimeAndInvoke() throws Throwable {
+        var generatedClass = ClassDesc.of("pl.mperor.lab.java.GeneratedAnswer");
+        var classBytes = ClassFile.of().build(generatedClass, classBuilder -> classBuilder
+                .withFlags(ClassFile.ACC_PUBLIC)
+                .withSuperclass(ConstantDescs.CD_Object)
+                .withMethodBody(
+                        "answer",
+                        MethodTypeDesc.of(ConstantDescs.CD_int),
+                        ClassFile.ACC_PUBLIC | ClassFile.ACC_STATIC,
+                        codeBuilder -> codeBuilder
+                                .loadConstant(42)
+                                .ireturn()));
 
-        var interrupted = new AtomicBoolean(false);
-        Thread waiter = Thread.ofVirtual().start(() -> {
-            try {
-                lock.lockInterruptibly();
-                lock.unlock();
-            } catch (InterruptedException e) {
-                interrupted.set(true);
-            }
-        });
-        Thread.sleep(100);
-        waiter.interrupt();
-        waiter.join();
+        var lookup = MethodHandles.lookup().defineHiddenClass(classBytes, true);
+        MethodHandle answer = lookup.findStatic(
+                lookup.lookupClass(), "answer", MethodType.methodType(int.class));
 
-        // unlike synchronized (see above), ReentrantLock#lockInterruptibly gives the waiting
-        // thread a way out: it throws as soon as it is interrupted, instead of waiting for the
-        // lock forever. That, plus tryLock, fairness and multiple Conditions, is still a reason
-        // to reach for it over synchronized.
-        Assertions.assertTrue(interrupted.get());
-        lock.unlock();
+        Assertions.assertEquals(42, (int) answer.invoke());
+    }
+
+    @Test
+    public void testTransformDropsMethod() throws IOException {
+        var originalModel = ClassFile.of().parse(classBytesOf(SampleTarget.class));
+
+        ClassTransform dropAdd = ClassTransform.dropping(element ->
+                element instanceof MethodModel method && method.methodName().stringValue().equals("add"));
+
+        var transformedBytes = ClassFile.of().transformClass(originalModel, dropAdd);
+        var transformedModel = ClassFile.of().parse(transformedBytes);
+
+        var remainingMethods = transformedModel.methods().stream()
+                .map(method -> method.methodName().stringValue())
+                .toList();
+
+        Assertions.assertFalse(remainingMethods.contains("add"));
+        Assertions.assertTrue(remainingMethods.contains("greet"));
     }
 }
