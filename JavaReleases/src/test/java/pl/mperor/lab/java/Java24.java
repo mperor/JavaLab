@@ -3,6 +3,17 @@ package pl.mperor.lab.java;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.lang.classfile.ClassFile;
+import java.lang.classfile.ClassModel;
+import java.lang.classfile.ClassTransform;
+import java.lang.classfile.MethodModel;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
+import java.lang.constant.MethodTypeDesc;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
@@ -143,5 +154,84 @@ public class Java24 {
                     return true;
                 }
         ));
+    }
+
+    @Test
+    public void testParseListsMethodsAndFields() throws IOException {
+        var classModel = ClassFile.of().parse(classBytesOf(SampleTarget.class));
+
+        var methodNames = classModel.methods().stream()
+                .map(method -> method.methodName().stringValue())
+                .toList();
+        var fieldNames = classModel.fields().stream()
+                .map(field -> field.fieldName().stringValue())
+                .toList();
+
+        // the compiler-generated constructor shows up as a plain method named "<init>".
+        Assertions.assertTrue(methodNames.containsAll(List.of("<init>", "add", "greet")));
+        Assertions.assertEquals(List.of("bonus"), fieldNames);
+    }
+
+    /// A tiny, unused-looking helper class: its only purpose is to be parsed/transformed as raw bytecode below.
+    private static class SampleTarget {
+        private final int bonus;
+
+        SampleTarget(int bonus) {
+            this.bonus = bonus;
+        }
+
+        int add(int a, int b) {
+            return a + b + bonus;
+        }
+
+        String greet(String name) {
+            return "Hello, " + name;
+        }
+    }
+
+    private static byte[] classBytesOf(Class<?> type) throws IOException {
+        var resourceName = type.getName().replace('.', '/') + ".class";
+        try (var in = type.getClassLoader().getResourceAsStream(resourceName)) {
+            return in.readAllBytes();
+        }
+    }
+
+    @Test
+    public void testBuildClassAtRuntimeAndInvoke() throws Throwable {
+        var generatedClass = ClassDesc.of("pl.mperor.lab.java.GeneratedAnswer");
+        var classBytes = ClassFile.of().build(generatedClass, classBuilder -> classBuilder
+                .withFlags(ClassFile.ACC_PUBLIC)
+                .withSuperclass(ConstantDescs.CD_Object)
+                .withMethodBody(
+                        "answer",
+                        MethodTypeDesc.of(ConstantDescs.CD_int),
+                        ClassFile.ACC_PUBLIC | ClassFile.ACC_STATIC,
+                        codeBuilder -> codeBuilder
+                                .loadConstant(42)
+                                .ireturn()));
+
+        var lookup = MethodHandles.lookup().defineHiddenClass(classBytes, true);
+        MethodHandle answer = lookup.findStatic(
+                lookup.lookupClass(), "answer", MethodType.methodType(int.class));
+
+        Assertions.assertEquals(42, (int) answer.invoke());
+    }
+
+    @Test
+    public void testTransformDropsMethod() throws IOException {
+        var originalModel = ClassFile.of().parse(classBytesOf(SampleTarget.class));
+
+        ClassTransform dropAdd = ClassTransform.dropping(element ->
+                element instanceof MethodModel method && method.methodName().stringValue().equals("add"));
+
+        var transformedBytes = ClassFile.of().transformClass(originalModel, dropAdd);
+        var transformedModel = ClassFile.of().parse(transformedBytes);
+
+        var remainingMethods = transformedModel.methods().stream()
+                .map(method -> method.methodName().stringValue())
+                .toList();
+
+        Assertions.assertFalse(remainingMethods.contains("add"));
+        Assertions.assertTrue(remainingMethods.contains("greet"));
     }
 }
