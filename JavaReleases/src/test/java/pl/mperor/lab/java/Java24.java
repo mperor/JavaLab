@@ -15,6 +15,9 @@ import java.lang.constant.MethodTypeDesc;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyPairGenerator;
+import java.security.Signature;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -26,6 +29,7 @@ import java.util.stream.Gatherer;
 import java.util.stream.Gatherers;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javax.crypto.KEM;
 
 /// Java 24 (March 2025)
 /// [JDK 24](https://openjdk.org/projects/jdk/24)
@@ -238,5 +242,57 @@ public class Java24 {
 
         Assertions.assertFalse(remainingMethods.contains("add"));
         Assertions.assertTrue(remainingMethods.contains("greet"));
+    }
+
+    @Test
+    public void testMlKemEncapsulationSharesSameSecret() throws Exception {
+        var receiverKeys = KeyPairGenerator.getInstance("ML-KEM-768").generateKeyPair();
+        var kem = KEM.getInstance("ML-KEM-768");
+
+        var encapsulator = kem.newEncapsulator(receiverKeys.getPublic());
+        var encapsulated = encapsulator.encapsulate();
+        var senderSecret = encapsulated.key();
+
+        var decapsulator = kem.newDecapsulator(receiverKeys.getPrivate());
+        var receiverSecret = decapsulator.decapsulate(encapsulated.encapsulation());
+
+        // the sender never transmits the secret itself, only the encapsulation; both sides derive
+        // the same SecretKey bytes from it independently.
+        Assertions.assertArrayEquals(senderSecret.getEncoded(), receiverSecret.getEncoded());
+    }
+
+    @Test
+    public void testMlDsaSignatureVerifiesForGenuineMessage() throws Exception {
+        var keys = KeyPairGenerator.getInstance("ML-DSA-65").generateKeyPair();
+        var message = "John Doe approved the transfer".getBytes(StandardCharsets.UTF_8);
+
+        var signer = Signature.getInstance("ML-DSA-65");
+        signer.initSign(keys.getPrivate());
+        signer.update(message);
+        var signature = signer.sign();
+
+        var verifier = Signature.getInstance("ML-DSA-65");
+        verifier.initVerify(keys.getPublic());
+        verifier.update(message);
+
+        Assertions.assertTrue(verifier.verify(signature));
+    }
+
+    @Test
+    public void testMlDsaSignatureRejectsTamperedMessage() throws Exception {
+        var keys = KeyPairGenerator.getInstance("ML-DSA-65").generateKeyPair();
+        var original = "John Doe approved the transfer".getBytes(StandardCharsets.UTF_8);
+        var tampered = "John Doe approved the deletion".getBytes(StandardCharsets.UTF_8);
+
+        var signer = Signature.getInstance("ML-DSA-65");
+        signer.initSign(keys.getPrivate());
+        signer.update(original);
+        var signature = signer.sign();
+
+        var verifier = Signature.getInstance("ML-DSA-65");
+        verifier.initVerify(keys.getPublic());
+        verifier.update(tampered);
+
+        Assertions.assertFalse(verifier.verify(signature));
     }
 }
