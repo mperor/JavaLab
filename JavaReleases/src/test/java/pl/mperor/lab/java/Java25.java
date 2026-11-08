@@ -4,8 +4,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pl.mperor.lab.common.TestUtils;
 
+import javax.crypto.KDF;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.HKDFParameterSpec;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /// Java 25 (September 2025)
@@ -185,6 +191,56 @@ public class Java25 {
                 "Compact source file & main method here ..." + System.lineSeparator()
                         + "Items: [a, b, c]" + System.lineSeparator(),
                 output);
+    }
+
+    @Test
+    public void testHkdfExtractThenExpandDerivesSecretKeyOfRequestedLength() throws GeneralSecurityException {
+        var kdf = KDF.getInstance("HKDF-SHA256");
+        byte[] ikm = "shared secret".getBytes(StandardCharsets.UTF_8);
+        byte[] salt = "a salt value".getBytes(StandardCharsets.UTF_8);
+        byte[] info = "session key".getBytes(StandardCharsets.UTF_8);
+
+        var spec = HKDFParameterSpec.ofExtract().addIKM(ikm).addSalt(salt).thenExpand(info, 32);
+        SecretKey key = kdf.deriveKey("AES", spec);
+
+        Assertions.assertEquals("AES", key.getAlgorithm());
+        Assertions.assertEquals(32, key.getEncoded().length);
+    }
+
+    @Test
+    public void testSameInputsDeriveSameKeyDifferentInfoDerivesDifferentKey() throws GeneralSecurityException {
+        byte[] ikm = "shared secret".getBytes(StandardCharsets.UTF_8);
+        byte[] salt = "a salt value".getBytes(StandardCharsets.UTF_8);
+
+        byte[] keyA = deriveAesKeyBytes(ikm, salt, "session key".getBytes(StandardCharsets.UTF_8));
+        byte[] keyB = deriveAesKeyBytes(ikm, salt, "session key".getBytes(StandardCharsets.UTF_8));
+        byte[] keyC = deriveAesKeyBytes(ikm, salt, "other purpose".getBytes(StandardCharsets.UTF_8));
+
+        // HKDF is deterministic: identical ikm/salt/info always derive the same key material.
+        Assertions.assertArrayEquals(keyA, keyB);
+        // Changing only the context-binding `info` derives an unrelated key, even from the same secret.
+        Assertions.assertFalse(Arrays.equals(keyA, keyC));
+    }
+
+    private static byte[] deriveAesKeyBytes(byte[] ikm, byte[] salt, byte[] info) throws GeneralSecurityException {
+        var kdf = KDF.getInstance("HKDF-SHA256");
+        var spec = HKDFParameterSpec.ofExtract().addIKM(ikm).addSalt(salt).thenExpand(info, 32);
+        return kdf.deriveKey("AES", spec).getEncoded();
+    }
+
+    @Test
+    public void testDeriveDataReturnsSameRawBytesAsDeriveKey() throws GeneralSecurityException {
+        byte[] ikm = "shared secret".getBytes(StandardCharsets.UTF_8);
+        byte[] salt = "a salt value".getBytes(StandardCharsets.UTF_8);
+        byte[] info = "session key".getBytes(StandardCharsets.UTF_8);
+        var spec = HKDFParameterSpec.ofExtract().addIKM(ikm).addSalt(salt).thenExpand(info, 32);
+
+        // deriveKey() and deriveData() run the same derivation; deriveKey() only wraps the
+        // resulting bytes into a SecretKey for a named algorithm, deriveData() hands them back raw.
+        byte[] rawData = KDF.getInstance("HKDF-SHA256").deriveData(spec);
+        byte[] keyBytes = KDF.getInstance("HKDF-SHA256").deriveKey("AES", spec).getEncoded();
+
+        Assertions.assertArrayEquals(keyBytes, rawData);
     }
 
 }
