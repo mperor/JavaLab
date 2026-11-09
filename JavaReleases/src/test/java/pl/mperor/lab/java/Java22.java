@@ -2,9 +2,13 @@ package pl.mperor.lab.java;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ListFormat;
 import java.util.Comparator;
 import java.util.List;
@@ -140,5 +144,59 @@ public class Java22 {
         String formatted = ListFormat.getInstance(Locale.UK, ListFormat.Type.STANDARD, ListFormat.Style.FULL)
                 .format(List.of("One", "Two", "Three"));
         Assertions.assertEquals("One, Two and Three", formatted);
+    }
+
+    /// GreetingMain.java has no package declaration and sits next to Greeter.java: JEP 458 lets
+    /// `java GreetingMain.java` find and compile that sibling file automatically, with no explicit
+    /// `javac` step and no build file - unlike the single-file-only launcher from Java 11 (JEP 330),
+    /// which could not resolve a dependency living in another source file.
+    @Test
+    public void testMultiFileSourceLauncherCompilesSiblingClassAutomatically() throws IOException, InterruptedException {
+        var javaLauncher = Path.of(System.getProperty("java.home"), "bin", "java");
+        var mainFile = Path.of("src", "main", "java", "pl", "mperor", "lab", "java", "GreetingMain.java");
+
+        var process = new ProcessBuilder(javaLauncher.toString(), mainFile.toString())
+                .redirectErrorStream(true)
+                .start();
+        String output = new String(process.getInputStream().readAllBytes());
+        int exitCode = process.waitFor();
+
+        Assertions.assertEquals(0, exitCode, output);
+        Assertions.assertEquals("Hello, World!" + System.lineSeparator(), output);
+    }
+
+    /// The launcher only compiles source files it actually needs: BrokenSibling.java below has a
+    /// syntax error but is never referenced by OnDemandMain, so `java OnDemandMain.java` still
+    /// succeeds - proof that compilation happens on demand, file by file, not for the whole directory.
+    @Test
+    public void testMultiFileSourceLauncherCompilesOnlyReferencedFiles(@TempDir Path dir) throws IOException, InterruptedException {
+        Files.writeString(dir.resolve("OnDemandMain.java"), """
+                void main() {
+                    IO.println(Dependency.value());
+                }
+                """);
+        Files.writeString(dir.resolve("Dependency.java"), """
+                class Dependency {
+                    static String value() {
+                        return "used";
+                    }
+                }
+                """);
+        Files.writeString(dir.resolve("BrokenSibling.java"), """
+                class BrokenSibling {
+                    this does not compile
+                }
+                """);
+
+        var javaLauncher = Path.of(System.getProperty("java.home"), "bin", "java");
+        var process = new ProcessBuilder(javaLauncher.toString(), "OnDemandMain.java")
+                .directory(dir.toFile())
+                .redirectErrorStream(true)
+                .start();
+        String output = new String(process.getInputStream().readAllBytes());
+        int exitCode = process.waitFor();
+
+        Assertions.assertEquals(0, exitCode, output);
+        Assertions.assertEquals("used" + System.lineSeparator(), output);
     }
 }
